@@ -21,7 +21,15 @@
 **ProgDraft 在连续草稿步骤之间递归传播显式声学位置。** 共享预测器根据当前隐藏状态与声学位置预测非负位移；累积位置通过 Gaussian bias 引导音频交叉注意力。冻结 target 验证草稿词元。
 
 <p align="center">
-  <img src="docs/assets/overview.svg" alt="ProgDraft 方法：target 初始化声学位置，drafter 递归预测位移，通过 Gaussian bias 引导音频注意力，再由 target 验证候选。" width="1000">
+  <img src="docs/assets/asr_fig1.png" alt="声学进度引导的投机 ASR 解码流程：冻结 target、共享 drafter 中的声学进度递归传播，以及 target 验证。" width="1000">
+  <br>
+  <em>(a) 声学进度引导的投机 ASR 解码流程。</em> <a href="docs/assets/asr_fig1.pdf">PDF</a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/asr_fig2.png" alt="共享 drafter 模块：递归预测声学进度，通过 Gaussian bias 引导音频交叉注意力，生成草稿词元。" width="1000">
+  <br>
+  <em>(b) 共享 drafter 模块。</em> <a href="docs/assets/asr_fig2.pdf">PDF</a>
 </p>
 
 - **声学进度传播：**每轮从当前 target L21 attention peak 初始化位置，后续步骤递归预测；推理不使用强制对齐信息。

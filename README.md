@@ -28,7 +28,15 @@
 **ProgDraft propagates an explicit acoustic position across draft steps.** A shared predictor estimates positive displacements from the drafter's hidden state and current acoustic position. The accumulated position guides audio cross-attention through a Gaussian bias. The target remains frozen and verifies the proposed tokens.
 
 <p align="center">
-  <img src="docs/assets/overview.svg" alt="ProgDraft: a frozen target initializes acoustic progress; recurrent draft steps predict displacements and use Gaussian-guided audio cross-attention before target verification." width="1000">
+  <img src="docs/assets/asr_fig1.png" alt="Progress-conditioned speculative ASR decoding: frozen target ASR, recurrent acoustic progress propagation in the shared drafter, and target verification." width="1000">
+  <br>
+  <em>(a) Progress-conditioned speculative ASR decoding.</em> <a href="docs/assets/asr_fig1.pdf">PDF</a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/asr_fig2.png" alt="Shared drafter block: recurrent progress prediction produces a Gaussian bias that guides audio cross-attention before token generation." width="1000">
+  <br>
+  <em>(b) Shared drafter block.</em> <a href="docs/assets/asr_fig2.pdf">PDF</a>
 </p>
 
 - **Acoustic progress propagation:** initialize from the current target L21 attention peak, then recursively predict positions without forced alignment at inference.
