@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="530" viewBox="0 0 1200 530" role="img" aria-labelledby="title desc">
+  <title id="title">ProgDraft method overview</title>
+  <desc id="desc">In each speculative round, the frozen target supplies restart features and an L21 acoustic position. Step one uses full audio attention. Later steps recursively predict positive acoustic displacements and apply a Gaussian attention bias. Target verification commits the accepted prefix and a correction or bonus token, then starts the next round with the updated context.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#64748b" stroke-width="1.4"/></marker>
+    <marker id="teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#0f766e" stroke-width="1.4"/></marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; fill: #162b40; }
+      .label { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; fill: #64748b; }
+      .heading { font-size: 20px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #52657a; }
+      .formula { font-size: 15px; font-family: 'DejaVu Sans', Arial, sans-serif; }
+      .path { fill: none; stroke: #64748b; stroke-width: 1.8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1200" height="530" rx="16" fill="#fff"/>
+  <text x="32" y="38" class="heading">Acoustic progress across a speculative round</text>
+  <text x="32" y="63" class="small">Frozen Qwen3-ASR target · recurrent drafter · shared displacement predictor · T: audio duration</text>
+
+  <rect x="32" y="92" width="252" height="306" rx="12" fill="#f8fafc" stroke="#dbe3ec"/>
+  <text x="52" y="122" class="label">01  TARGET CONTEXT</text>
+  <text x="52" y="157" class="heading">Committed prefix</text>
+  <text x="52" y="184" class="body">Current token embedding</text>
+  <text x="52" y="208" class="body">Same-position block features</text>
+  <line x1="52" y1="232" x2="264" y2="232" stroke="#dbe3ec"/>
+  <text x="52" y="258" class="body" font-weight="600">Initialize acoustic position</text>
+  <text x="52" y="284" class="body">L21 query → audio keys</text>
+  <text x="52" y="308" class="body">Mean over heads → peak</text>
+  <text x="52" y="334" class="formula">a₁ = audio time at peak</text>
+  <text x="52" y="359" class="small">Once per round</text>
+  <text x="52" y="381" class="small">Read from existing target KV</text>
+
+  <path d="M284 192 H326" class="path"/>
+  <rect x="326" y="92" width="530" height="306" rx="12" fill="#f0fdfa" stroke="#99d6cc"/>
+  <text x="346" y="122" class="label" style="fill:#0f766e">02  DRAFT &amp; PROPAGATE</text>
+  <rect x="346" y="151" width="146" height="152" rx="8" fill="#fff" stroke="#c9e6df"/>
+  <text x="363" y="181" class="heading">Step 1</text>
+  <text x="363" y="211" class="body">Restart features</text>
+  <text x="363" y="236" class="body">Full audio</text>
+  <text x="363" y="257" class="body">cross-attention</text>
+  <text x="363" y="286" class="formula">→ z₁, token ŷ₁</text>
+
+  <path d="M492 223 H526" fill="none" stroke="#0f766e" stroke-width="1.8" marker-end="url(#teal)"/>
+  <rect x="526" y="151" width="310" height="198" rx="8" fill="#fff" stroke="#99d6cc"/>
+  <text x="545" y="181" class="heading">Steps k = 2 … K</text>
+  <text x="545" y="208" class="body">Previous z + token + self-KV</text>
+  <text x="545" y="232" class="body">Self-attention → h_pre</text>
+  <text x="545" y="260" class="formula">δₖ = Softplus(MLP(h_pre, aₖ₋₁/T))</text>
+  <text x="545" y="285" class="formula" style="fill:#0f766e;font-weight:600">aₖ = aₖ₋₁ + δₖ</text>
+  <text x="545" y="313" class="body">Gaussian-guided audio attention</text>
+  <text x="545" y="334" class="small">Full memory · σ = 0.2 s · FFN → zₖ</text>
+  <text x="346" y="376" class="small">Shared weights at every continuation step · no FA at inference</text>
+
+  <path d="M856 223 H898" class="path"/>
+  <rect x="898" y="92" width="270" height="306" rx="12" fill="#f8fafc" stroke="#dbe3ec"/>
+  <text x="918" y="122" class="label">03  TARGET VERIFICATION</text>
+  <text x="918" y="157" class="heading">Verify draft tokens</text>
+  <text x="918" y="190" class="body">Batched target forward</text>
+  <text x="918" y="218" class="body">Accept the matching prefix</text>
+  <line x1="918" y1="240" x2="1148" y2="240" stroke="#dbe3ec"/>
+  <text x="918" y="268" class="body">Commit correction / bonus*</text>
+  <text x="918" y="296" class="body">Update target KV cache</text>
+  <text x="918" y="375" class="small">*When generation continues</text>
+
+  <path d="M1033 398 V426 H158 V398" class="path"/>
+  <rect x="424" y="414" width="340" height="24" fill="#fff"/>
+  <text x="594" y="431" text-anchor="middle" class="small">Next round: actual committed prefix</text>
+  <rect x="32" y="457" width="1136" height="49" rx="8" fill="#f1f5f9"/>
+  <text x="52" y="487" class="body"><tspan font-weight="650">Training</tspan><tspan>  ·  target-greedy teacher forcing  ·  per-anchor K ∼ Uniform{3,…,8}  ·  token + feature + progress losses</tspan></text>
+</svg>

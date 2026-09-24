@@ -1,0 +1,20 @@
+name: Reproduction question
+description: Ask about data preparation, checkpoints or the evaluation protocol.
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: Describe the step or documented behavior you want to clarify.
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Setup and assets
+      description: Include model scale, commit, configuration, asset hashes, and whether caches are historical exports or newly prepared.
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and relevant output
+      description: Omit credentials, private data and licensed audio.

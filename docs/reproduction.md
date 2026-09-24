@@ -1,5 +1,21 @@
 # Reproduction
 
+[Documentation](README.md) / Reproduction
+
+## Requirements
+
+Use the [ASR environment](installation.md), the matching model configuration, and the full frozen cache for 3,933 training and 250 validation utterances. Exact replay requires the original step-0 initialization with its RNG state. See [asset availability](data_and_assets.md).
+
+```bash
+progdraft-train \
+  --config configs/qwen3_asr_0.6b.json \
+  --initial-weights artifacts/0.6b/step0.safetensors \
+  --manifest artifacts/0.6b/manifest.jsonl \
+  --output runs/ours_0.6b
+```
+
+For 1.7B, replace both the config and asset paths. The configuration preserves 45 epochs / 14,760 steps and the scale-specific final-batch policy. `--stop-after` limits execution without shortening the cosine scheduler horizon.
+
 ## Exact historical assets
 
 The public download location for exact checkpoints/caches is TBD. For the authors' existing research checkout, export without changing any original tensors:
@@ -15,7 +31,7 @@ The source-root argument is explicit; this converter does not import the old exp
 
 Run the README training command with the full manifest. For 1.7B substitute its config and assets. `--resume runs/.../checkpoints/step_XXXXX.pt` restores optimizer, scheduler, CPU/CUDA RNG, utterance shuffle and the preplanned per-anchor K values. Resume checkpoints are local trusted PyTorch files; never load unknown downloaded pickle checkpoints. The portable trainer evaluates teacher-forced depth metrics at saved checkpoints and does not perform runtime tuning.
 
-The objective, model operation order and cache verifier are extracted from the recorded source revision (see `source_provenance.json`). The portable trainer is a packaging refactor; a new 45-epoch training run has **not** been performed to establish end-to-end bitwise equality. Model/loss/gradient and runtime smoke equivalence are checked separately. Future environment changes or newly generated caches can produce different training trajectories.
+The objective, model operation order and cache verifier are extracted from the [recorded source revision](audits/source_provenance.json). The portable trainer is a packaging refactor; a new 45-epoch training run has **not** been performed to establish end-to-end bitwise equality. Model/loss/gradient and runtime smoke equivalence are checked separately. Future environment changes or newly generated caches can produce different training trajectories.
 
 ## Standalone cache preparation on licensed audio
 

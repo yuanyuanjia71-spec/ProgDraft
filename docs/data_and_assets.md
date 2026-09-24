@@ -1,8 +1,27 @@
 # Data and assets
 
+[Documentation](README.md) / Data and assets
+
+## Availability
+
+| Asset | Current status | Use |
+| :--- | :--- | :--- |
+| Source and model configurations | Included | Implementation and commands |
+| Dataset IDs, revisions and checksums | [Included](../manifests/) | Fixed split membership |
+| Frozen Qwen3-ASR target | Downloaded from the pinned upstream revision | Training and inference |
+| ProgDraft final weights, both scales | Public download pending | Inference and evaluation |
+| Original step-0 weights and frozen caches | Public download pending | Exact historical training replay |
+| Raw audio and transcripts | Obtain from the dataset providers | Data preparation and scoring |
+
+For each scale, the expected portable weight names are `ours.safetensors` and `step0.safetensors`. Their SHA-256 checksums are in the [checkpoint inventory](checkpoint_inventory.json). These files contain our drafter/predictor tensors, not the frozen target weights. Local `artifacts/`, `data/` and `runs/` directories are ignored by Git.
+
+## Fixed datasets
+
 The historical training mixture contains 3,933 utterances: 1,797 LibriSpeech Clean, 598 LibriSpeech Other, 598 TED-LIUM, 300 GigaSpeech and 640 FLEURS. Validation contains 250 fixed utterances. Final Test contains 1,000 fixed utterances, 200 each from LibriSpeech test-clean, LibriSpeech test-other, TED-LIUM 3 test, GigaSpeech test and FLEURS en-us test.
 
 `manifests/` contains source IDs, dataset revisions, source rows/shards, split memberships and waveform hashes. It omits transcripts, audio, machine-local paths and generated features. These are **identity manifests**, not ready-to-run audio manifests. Download datasets through their official access procedures, including authorization where needed, then construct relative-path input manifests. No audio is redistributed here.
+
+## Portable training cache
 
 For exact training replay, each portable utterance cache has:
 

@@ -1,5 +1,7 @@
 # Exact implementation contract
 
+[Documentation](README.md) / Implementation reference
+
 ## Models
 
 | Setting | Qwen3-ASR-0.6B | Qwen3-ASR-1.7B |

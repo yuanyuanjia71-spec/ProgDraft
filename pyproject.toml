@@ -6,10 +6,16 @@ build-backend = "setuptools.build_meta"
 name = "progdraft"
 version = "0.1.0"
 description = "Progress-aware variable-horizon speculative drafting for Qwen3-ASR"
+keywords = ["speech-recognition", "speculative-decoding", "acoustic-progress", "qwen3-asr"]
 authors = [{name = "Yuanyuan Jia"}, {name = "Qianqian Yang"}]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["torch>=2.11,<2.12", "numpy>=2,<3", "safetensors>=0.8,<0.9"]
+
+[project.urls]
+Repository = "https://github.com/yuanyuanjia71-spec/ProgDraft"
+Documentation = "https://github.com/yuanyuanjia71-spec/ProgDraft/blob/main/docs/README.md"
+Issues = "https://github.com/yuanyuanjia71-spec/ProgDraft/issues"
 
 [project.optional-dependencies]
 asr = ["qwen-asr==0.0.6", "transformers==4.57.6", "huggingface-hub==0.36.2", "soundfile==0.13.1", "librosa==0.11.0"]

@@ -1,5 +1,7 @@
 # Release validation — 2026-09-24
 
+[Documentation](README.md) / Release validation
+
 This records packaging checks, not a new training experiment or a replacement Final Test benchmark.
 
 ## Automated contracts
@@ -8,13 +10,13 @@ Six tests pass in the tested environment: exact Random-K loss reduction; cumulat
 
 ## Source equivalence
 
-`source_equivalence_audit.json` records two scales, two real exported training anchors, horizons 3 and 8, source checkpoint tensors and the actual frozen target embedding/LM head. The source and released drafter produced exactly equal states, acoustic positions, observation records and total loss. Parameter counts match both research models.
+[The source equivalence audit](audits/source_equivalence_audit.json) records two scales, two real exported training anchors, horizons 3 and 8, source checkpoint tensors and the actual frozen target embedding/LM head. The source and released drafter produced exactly equal states, acoustic positions, observation records and total loss. Parameter counts match both research models.
 
 With feature/progress losses excluded, CE-only backward at the original step-0 initialization gives predictor gradient norms approximately **0.09826 (0.6B)** and **0.54441 (1.7B)**. This verifies a live gradient path. On the tiny trained-checkpoint fixture the norms were 0.73565 and 0 respectively; the latter's displacement outputs were numerically zero on that fixture. The audit does not claim a nonzero local derivative for every trained example, or infer dataset-wide behavior from two anchors. No optimizer update was performed.
 
 ## Real target/cache replay
 
-`runtime_equivalence_audit.json` records one fixed Final Test utterance from each of the five datasets, for each scale, at inference K=8. All **10/10** checks passed:
+[The runtime equivalence audit](audits/runtime_equivalence_audit.json) records one fixed Final Test utterance from each of the five datasets, for each scale, at inference K=8. All **10/10** checks passed:
 
 - Original Ours token IDs equal released Ours token IDs.
 - Released Ours token IDs equal the corresponding target-only greedy IDs.

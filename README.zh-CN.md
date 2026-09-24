@@ -1,43 +1,96 @@
-# ProgDraft: Acoustic Progress Propagation for Speculative ASR
+<h1 align="center">ProgDraft: Acoustic Progress Propagation for Speculative ASR</h1>
 
-论文：**Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR**
+<p align="center">
+  <strong>Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR</strong><br>
+  Yuanyuan Jia · Qianqian Yang<br>
+  Zhejiang University
+</p>
 
-作者：**Yuanyuan Jia, Qianqian Yang**
+<p align="center">
+  <a href="README.md">English</a> ·
+  <a href="#方法概览">方法概览</a> ·
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#训练与评估">训练与评估</a> ·
+  <a href="docs/README.md">完整文档</a>
+</p>
 
-单位：**Zhejiang University**
+> **发布状态：**源码与配置已公开。论文、模型权重和冻结训练缓存的下载链接待补充。推理需要对应规模的 ProgDraft 权重；精确重放训练还需要原始初始化和缓存，详见[数据与资产](docs/data_and_assets.md)。
 
-仓库：https://github.com/yuanyuanjia71-spec/ProgDraft
+## 方法概览
 
-论文链接与许可证：**TBD**，确定后补充；当前没有正式 `LICENSE`。
+**ProgDraft 在连续草稿步骤之间递归传播显式声学位置。** 共享预测器根据当前隐藏状态与声学位置预测非负位移；累积位置通过 Gaussian bias 引导音频交叉注意力。冻结 target 验证草稿词元。
 
-该目录整理的是已经完成的 Ours：Joint Progress-Aware + Random-K[3,8]，包含 0.6B 和 1.7B 两套配置。原实验目录与权重保持不变。
+<p align="center">
+  <img src="docs/assets/overview.svg" alt="ProgDraft 方法：target 初始化声学位置，drafter 递归预测位移，通过 Gaussian bias 引导音频注意力，再由 target 验证候选。" width="1000">
+</p>
 
-## 目录内容
+- **声学进度传播：**每轮从当前 target L21 attention peak 初始化位置，后续步骤递归预测；推理不使用强制对齐信息。
+- **可变深度训练：**每个训练 anchor 独立采样 K=3–8，联合训练 drafter 与 progress predictor。
+- **真实缓存投机解码：**自由生成候选，由 target 批量验证，随后更新已提交前缀与 KV cache。
 
-- `src/progress_asr/`：drafter、共享声学位移预测器、Random-K 训练目标、训练入口、真实缓存投机推理、端到端测速及文本评分。
-- `configs/`：两个模型规模的实际配置，包括 epoch 末尾 batch 的已有差异。
-- `scripts/export_research_assets.py`：将原始可信研究资产导出为独立缓存和 safetensors 权重。
-- `manifests/`：固定训练、验证和测试样本 ID、数据版本与校验信息；不包含音频和转录。
-- `tests/`：词元错位、KV 递归、loss reduction、CE 到 predictor 的梯度、首拒和 EOS 等契约测试。
-- `docs/`：实际实现、复现步骤、数据与权重状态、验证记录。
+本仓库包含 **Ours：Joint Progress-Aware + Random-K[3,8]** 的两套配置：
 
-## 使用方式
+| 冻结 Target | Drafter 参数量 | Progress predictor 参数量 | 配置 |
+| :--- | ---: | ---: | :--- |
+| Qwen3-ASR-0.6B | 17,846,272 | 591,105 | [0.6B](configs/qwen3_asr_0.6b.json) |
+| Qwen3-ASR-1.7B | 71,344,128 | 1,115,393 | [1.7B](configs/qwen3_asr_1.7b.json) |
 
-安装适配当前 CUDA 的 PyTorch 后执行：
+词元位置、音频时间坐标、loss reduction 及两种规模的配置差异见[实际实现](docs/implementation.md)。
+
+## 快速开始
+
+使用 Python 3.11，先安装适配本机 CUDA 的 PyTorch 2.11，再执行：
 
 ```bash
+git clone https://github.com/yuanyuanjia71-spec/ProgDraft.git
+cd ProgDraft
 python -m pip install -e '.[asr]'
-python -m unittest discover -s tests -v
 ```
 
-训练、推理和测速命令见 [英文 README](README.md)。所有公开脚本从参数读取数据、输出和权重路径，不依赖作者原实验目录；只有显式指定 `--source-root` 的资产转换工具读取历史目录布局。
+取得对应权重后运行：
 
-训练使用 target greedy trajectory 的 teacher-forced token；声学位置、隐藏状态与 self-KV 在模型内递归。推理使用真实预测 token 和实时 target cache，L21 初始化来自当前已提交前缀，不按固定 K 索引旧缓存。保留独立 correction/bonus forward，全部计入端到端耗时。
+```bash
+progdraft-decode \
+  --config configs/qwen3_asr_0.6b.json \
+  --weights artifacts/0.6b/ours.safetensors \
+  --audio data/example.wav \
+  --k 8
+```
 
-## 发布状态
+1.7B 使用对应配置与权重。更多参数见[安装](docs/installation.md)和[推理](docs/inference.md)。当前权重下载链接尚未发布，示例路径需要用户提供实际文件。
 
-代码包已整理并进行单元测试与小规模原实现等价检查。没有重新训练，也没有将公开包的小规模检查冒充完整 Final Test 测速。
+## 训练与评估
 
-现有最终权重和 step-0 初始化以不含 target 权重的 safetensors 格式暂存在本地、被 Git 忽略的 `artifacts/`。正式权重下载地址、完整训练缓存下载地址、许可证和论文链接仍待补充。原始数据需按各数据集的官方条款获取。
+训练使用 target greedy trajectory 的 teacher-forced token；隐藏状态、self-KV 和声学位置递归传播。Target、embedding、LM head 与音频表示冻结，完整 drafter 和 progress predictor 参与联合训练。
 
-具体检查范围和限制见 [validation.md](docs/validation.md)。
+```bash
+progdraft-train \
+  --config configs/qwen3_asr_0.6b.json \
+  --initial-weights artifacts/0.6b/step0.safetensors \
+  --manifest artifacts/0.6b/manifest.jsonl \
+  --output runs/ours_0.6b
+```
+
+完整训练需要 3,933 条训练语音与固定 250 条验证语音的缓存，训练 45 epochs / 14,760 steps。[复现指南](docs/reproduction.md)说明缓存准备、原始资产导出及断点恢复。
+
+在同一 GPU 上与 target-only 配对评估：
+
+```bash
+progdraft-benchmark \
+  --config configs/qwen3_asr_0.6b.json \
+  --weights artifacts/0.6b/ours.safetensors \
+  --manifest data/test.jsonl \
+  --output runs/test_k8 \
+  --k 8
+```
+
+输出 **WER、CER、E2E speedup、Mean Accepted**，分别统计整体与各数据集。Mean Accepted 包含实际输出的 correction/bonus token；输出 token IDs 与 target-only 不一致时停止，不生成整体 speedup。完整计时范围与数值设置见[运行协议](docs/runtime.md)。仓库不附带实验结果目录。
+
+## 文档与发布信息
+
+- [文档导航](docs/README.md)：安装、训练、推理、评估与实现细节。
+- [数据与资产](docs/data_and_assets.md)：数据 ID、版本、权重状态及校验值。
+- [验证记录](docs/validation.md)：已有契约测试、原实现等价检查及覆盖范围。
+- [开发说明](CONTRIBUTING.md)：本地检查与问题反馈。
+
+论文链接与正式引用信息待补充，作者信息见 [CITATION.cff](CITATION.cff)。许可证为 **TBD**，确定后添加正式 `LICENSE`；当前占位文字不授予开源许可。第三方组件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

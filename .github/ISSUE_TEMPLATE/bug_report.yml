@@ -1,0 +1,24 @@
+name: Bug report
+description: Report an installation, training or decoding issue.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and observed behavior
+      description: Describe the problem and the command that triggers it.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the commit, model scale, OS, Python, PyTorch, CUDA and GPU.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps and logs
+      description: Provide a small example. Remove credentials and private paths; use public sample IDs instead of uploading audio.
+    validations:
+      required: true

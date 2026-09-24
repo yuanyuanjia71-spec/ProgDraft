@@ -21,7 +21,7 @@
 - 两个规模各选五个数据集的一条真实音频，K=8 共 10/10 条与原实现及 target-only 的 token IDs 一致；轮数与 accepted-draft count 一致。
 - 此次小规模检查仅用于验证代码等价性，不替代完整 Final Test。
 
-详细数值与检查范围见 `source_equivalence_audit.json`、`runtime_equivalence_audit.json` 和 `validation.md`。后者同时记录：1.7B 最终权重在小型梯度 fixture 上的局部 CE 梯度为零；初始化下的梯度连通性检查通过。没有据此推断全数据集行为。
+详细数值与检查范围见 `source_equivalence_audit.json`、`runtime_equivalence_audit.json` 和 [validation.md](../validation.md)。后者同时记录：1.7B 最终权重在小型梯度 fixture 上的局部 CE 梯度为零；初始化下的梯度连通性检查通过。没有据此推断全数据集行为。
 
 ## 外部资产与待填写项
 
