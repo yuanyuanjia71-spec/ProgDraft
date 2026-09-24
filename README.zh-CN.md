@@ -18,7 +18,6 @@
 - `configs/`：两个模型规模的实际配置，包括 epoch 末尾 batch 的已有差异。
 - `scripts/export_research_assets.py`：将原始可信研究资产导出为独立缓存和 safetensors 权重。
 - `manifests/`：固定训练、验证和测试样本 ID、数据版本与校验信息；不包含音频和转录。
-- `results/`：Ours 已有 Final Test K=8 分数据集结果和数据来源。
 - `tests/`：词元错位、KV 递归、loss reduction、CE 到 predictor 的梯度、首拒和 EOS 等契约测试。
 - `docs/`：实际实现、复现步骤、数据与权重状态、验证记录。
 

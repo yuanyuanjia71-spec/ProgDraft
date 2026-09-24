@@ -20,7 +20,7 @@ With feature/progress losses excluded, CE-only backward at the original step-0 i
 - Released Ours token IDs equal the corresponding target-only greedy IDs.
 - Speculative round counts and accepted-draft counts equal the source run.
 
-The check used existing frozen final weights and the actual target KV cache. It measured correctness only; no new speedup is reported. It does not replace the historical full 1,000-utterance audit in `results/`.
+The check used existing frozen final weights and the actual target KV cache. It measured correctness only; no new speedup is reported. It does not replace a full 1,000-utterance benchmark.
 
 ## Limits
 

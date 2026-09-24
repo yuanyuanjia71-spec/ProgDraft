@@ -49,10 +49,9 @@ This is a source release prepared from the completed experiments. Download URLs 
 - [Asset inventory and data access](docs/data_and_assets.md)
 - [Training and reproduction](docs/reproduction.md)
 - [Runtime and timing protocol](docs/runtime.md)
-- [Historical results and their provenance](results/README.md)
 - [Release validation](docs/validation.md)
 
-Historical experiment results below were measured with the research implementation. They are not new full-test measurements of this extracted package. Package parity checks are documented separately.
+Package parity checks and their scope are documented in the release validation notes.
 
 ## Inference
 

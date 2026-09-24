@@ -10,6 +10,6 @@ Timing starts before waveform loading and processor/audio encoding for E2E, afte
 
 Mean Accepted (tau) is total actually emitted token IDs / speculative rounds. Actual correction/bonus and EOS are counted; a fictitious post-EOS token is never added. Raw `accepted_sum` retains its narrower accepted-draft-token definition for audits.
 
-Historical results were measured on an otherwise idle NVIDIA H100 80GB, physical GPU0, batch size 1, concurrency 1. Source `results/` data are historical measurements, not speed claims from the release smoke checks. The generic package allows another CUDA device, but comparisons must use the same idle GPU and protocol.
+The research benchmarks used an otherwise idle NVIDIA H100 80GB, physical GPU0, batch size 1, concurrency 1. The release smoke checks verify correctness only. The generic package allows another CUDA device, but comparisons must use the same idle GPU and protocol.
 
 WER/CER are corpus-level edit distances under the exact source normalization: convert GigaSpeech punctuation markers, remove special tags, NFKC, lowercase, normalize curly apostrophe, replace other punctuation by spaces, collapse whitespace. CER removes spaces. Test references are passed only to scoring.
