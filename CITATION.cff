@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "Paper link and publication details are TBD; update this record when the preprint is public."
+title: "ProgDraft: Acoustic Progress Propagation for Speculative ASR"
+type: software
+authors:
+  - family-names: Jia
+    given-names: Yuanyuan
+    affiliation: Zhejiang University
+  - family-names: Yang
+    given-names: Qianqian
+    affiliation: Zhejiang University
+version: 0.1.0
+abstract: "Code for Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR. Planned repository: github.com/yuanyuanjia71-spec/ProgDraft. Paper link and license TBD."

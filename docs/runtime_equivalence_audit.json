@@ -1,0 +1,106 @@
+{
+  "K": 8,
+  "scope": "five fixed Final Test utterances per scale, one per dataset; correctness only, not full benchmark",
+  "checks": [
+    {
+      "scale": "0.6b",
+      "dataset": "librispeech_clean",
+      "sample_index": 0,
+      "tokens": 75,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "0.6b",
+      "dataset": "librispeech_other",
+      "sample_index": 200,
+      "tokens": 11,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "0.6b",
+      "dataset": "tedlium",
+      "sample_index": 400,
+      "tokens": 39,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "0.6b",
+      "dataset": "gigaspeech",
+      "sample_index": 600,
+      "tokens": 36,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "0.6b",
+      "dataset": "fleurs_en_us",
+      "sample_index": 800,
+      "tokens": 24,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "1.7b",
+      "dataset": "librispeech_clean",
+      "sample_index": 0,
+      "tokens": 75,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "1.7b",
+      "dataset": "librispeech_other",
+      "sample_index": 200,
+      "tokens": 11,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "1.7b",
+      "dataset": "tedlium",
+      "sample_index": 400,
+      "tokens": 38,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "1.7b",
+      "dataset": "gigaspeech",
+      "sample_index": 600,
+      "tokens": 36,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    },
+    {
+      "scale": "1.7b",
+      "dataset": "fleurs_en_us",
+      "sample_index": 800,
+      "tokens": 26,
+      "original_vs_release": true,
+      "target_only_exact": true,
+      "rounds_exact": true,
+      "accepted_draft_count_exact": true
+    }
+  ]
+}

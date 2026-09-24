@@ -1,0 +1,47 @@
+{
+  "scope": "real exported training records and target vocabulary weights; exact final-weight forward parity; CE-only gradient connectivity checked at original step0; no optimizer update",
+  "checks": [
+    {
+      "scale": "0.6b",
+      "drafter_parameters": 17846272,
+      "predictor_parameters": 591105,
+      "rollout_depths": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "loss_exact": true,
+      "states_exact": true,
+      "positions_exact": true,
+      "observations_exact": true,
+      "trained_ce_only_predictor_grad_norm": 0.7356523176038492,
+      "step0_ce_only_predictor_grad_norm": 0.09826186655123312
+    },
+    {
+      "scale": "1.7b",
+      "drafter_parameters": 71344128,
+      "predictor_parameters": 1115393,
+      "rollout_depths": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "loss_exact": true,
+      "states_exact": true,
+      "positions_exact": true,
+      "observations_exact": true,
+      "trained_ce_only_predictor_grad_norm": 0.0,
+      "step0_ce_only_predictor_grad_norm": 0.5444090183940837
+    }
+  ]
+}

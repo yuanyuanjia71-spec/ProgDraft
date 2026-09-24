@@ -1,0 +1,50 @@
+{
+  "files": [
+    {
+      "path": "draft_model.py",
+      "sha256": "c1b566ae8b6a0865504d478a825bcd302338bbd7acbaab856f6841de18911312"
+    },
+    {
+      "path": "progress_aware_drafter.py",
+      "sha256": "322f3824cef1bafe5a4b733da951880c396b168ec8a8e603c39a6ec35424edcb"
+    },
+    {
+      "path": "random_k_progress.py",
+      "sha256": "efd9e8d8cfb6f9a756c31568df6851c3e00b682725a8a136d632f3685dafedf7"
+    },
+    {
+      "path": "train_random_k_progress.py",
+      "sha256": "da4de381e0ad10a4a0f457379cee31e53fce2a22eaa13a69e38bb5ce68885f42"
+    },
+    {
+      "path": "random_k_data.py",
+      "sha256": "87448f7df18e5f967593fa8f34bbc35f8c18931ec4effa9b49c81659abff7583"
+    },
+    {
+      "path": "cached_speculative_loop.py",
+      "sha256": "10295a7c667bd8dde6aade064fc338cce1916caeb629f1f238ad91f431311a22"
+    },
+    {
+      "path": "benchmark_final_test_k3.py",
+      "sha256": "855b360bd1bcf133fbeb12a057d691208cefbabf9920163ecb267eef916b8265"
+    },
+    {
+      "path": "benchmark_draft_length_k45_native_lossless.py",
+      "sha256": "0a0ed80f23c9649904981190566f2daa0831b36dac2cec93656d2bd6e26c435c"
+    },
+    {
+      "path": "target_scale_1p7b/train.py",
+      "sha256": "1151f9909f1ffb8d16e13044f51a6e9456da1f6f8c3f74e4dab6eef170225efa"
+    },
+    {
+      "path": "eval_anchor_coverage.py",
+      "sha256": "69b2c522441daf36b33c0cefd90a07edf9cb19d191908795eb1c938db440d0f3"
+    },
+    {
+      "path": "diagnostics/report_final_test_four_metrics.py",
+      "sha256": "36a687af1989bbda5caaf63e6136293d64a2a8571936f0594c3c05ce85853df1"
+    }
+  ],
+  "scope": "Ours Random-K[3,8]; no baseline or ablation weights included",
+  "source_commit": "8d1b105b11abd14beb2e7b927c98ba2ee2e63dc0"
+}

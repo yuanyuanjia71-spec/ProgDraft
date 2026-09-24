@@ -1,0 +1,29 @@
+{
+  "download_urls": "TBD",
+  "tensor_only_exports": {
+    "0.6b": {
+      "final": {
+        "source_sha256": "61142d4fb40e44d399970c6ddef4497d5cd1466fa0eece84d1862ee1de6e458e",
+        "safetensors_sha256": "4e46c9a6cd1925771d5f5111264f94617d03cfe40436ae8125d6cd58209d112f",
+        "file": "ours.safetensors"
+      },
+      "initial": {
+        "source_sha256": "4eb53351ee9c14be537c52b75adac5fdb2c57a2b1bc09f2950587fd4f80da312",
+        "safetensors_sha256": "4334ff66bd834e96815c20d032e9d0306f6e2a22d6127b1b96ecac95c88683c6",
+        "file": "step0.safetensors"
+      }
+    },
+    "1.7b": {
+      "final": {
+        "source_sha256": "4cebaf600d5d863526b8705d56cca0e5da1edaa8ebb8f8f88cb7e8f410a8ed4e",
+        "safetensors_sha256": "b1f2a6176470d0dd718e9384fabc1def48dabf74762bd2a601b2f947f3f84920",
+        "file": "ours.safetensors"
+      },
+      "initial": {
+        "source_sha256": "159f271c59cd8d9105d51c2040fedfdb07a3877b0412f57caa2910b013f90609",
+        "safetensors_sha256": "05e035569a37d846f462996cdd4f1ecd79b8bce001332f6aca5344c899ed2952",
+        "file": "step0.safetensors"
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "scale": "0.6b",
+  "target": {
+    "model_id": "Qwen/Qwen3-ASR-0.6B",
+    "revision": "5eb144179a02acc5e5ba31e748d22b0cf3e303b0",
+    "runtime_dtype": "float32",
+    "runtime_attention": "eager",
+    "training_dtype": "bfloat16"
+  },
+  "drafter": {
+    "hidden_size": 1024,
+    "attention_heads": 16,
+    "ffn_hidden": 2048,
+    "feature_layers": [
+      0,
+      9,
+      18,
+      27
+    ],
+    "feature_noise": 0.6
+  },
+  "progress": {
+    "input": "h_pre + current_position/audio_duration",
+    "hidden": [
+      512,
+      128
+    ],
+    "output": "softplus",
+    "sigma_seconds": 0.2,
+    "initialization_layer": 21,
+    "audio_time_grid": "uniform_duration_midpoints"
+  },
+  "training": {
+    "seed": 0,
+    "utterance_batch_size": 12,
+    "anchor_microbatch": 24,
+    "epochs": 45,
+    "steps": 14760,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "cosine_T_max": 14760,
+    "K_min": 3,
+    "K_max": 8,
+    "depth_weights": [
+      1.0,
+      0.7,
+      0.48999999999999994,
+      0.3429999999999999,
+      0.24009999999999995,
+      0.16806999999999994,
+      0.11764899999999996,
+      0.08235429999999996
+    ],
+    "feature_coefficient": 0.5,
+    "progress_coefficient": 0.1,
+    "tail_policy": "keep",
+    "expected_train_utterances": 3933
+  }
+}

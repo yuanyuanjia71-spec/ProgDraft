@@ -1,0 +1,9 @@
+{
+  "public_identity_manifests": {
+    "train_validation_0.6b_ids.jsonl": "b266453a0cdd423b6a89d07aef2a676ead1f13bd9163b6d01583b697de907092",
+    "train_validation_1.7b_ids.jsonl": "b266453a0cdd423b6a89d07aef2a676ead1f13bd9163b6d01583b697de907092",
+    "final_test_1000_ids.jsonl": "96978595449d0aab821027b8fe8f01a262ad7f2964b3dabba3bad61eb36f2605"
+  },
+  "original_final_test_manifest_sha256": "e4c9f28948f7f69a012e87b9a7ebc6c26b79236b57f573c1ffae710efe0fc17e",
+  "identity_only": true
+}
