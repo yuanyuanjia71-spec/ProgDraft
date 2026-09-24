@@ -4,7 +4,7 @@ Code for **Acoustic Progress Propagation for Long-Horizon Speculative Decoding i
 
 **Yuanyuan Jia, Qianqian Yang — Zhejiang University**
 
-Planned repository: https://github.com/yuanyuanjia71-spec/ProgDraft
+Repository: https://github.com/yuanyuanjia71-spec/ProgDraft
 
 Paper / preprint: **TBD**
 
@@ -44,7 +44,7 @@ MMS-FA preprocessing additionally needs a matching TorchAudio installation (`pip
 
 ## Assets and reproduction status
 
-This is a source release prepared from the completed experiments. Download URLs for the exact initialization weights, final weights, frozen feature caches and paper are **TBD**. They must not be inferred from the planned repository address. The code includes a trusted-local-asset conversion tool; tensor-only weight exports are staged locally under ignored `artifacts/`, not in Git.
+This is a source release prepared from the completed experiments. Download URLs for the exact initialization weights, final weights, frozen feature caches and paper are **TBD**. This source repository does not yet host those external assets. The code includes a trusted-local-asset conversion tool; tensor-only weight exports are staged locally under ignored `artifacts/`, not in Git.
 
 - [Asset inventory and data access](docs/data_and_assets.md)
 - [Training and reproduction](docs/reproduction.md)

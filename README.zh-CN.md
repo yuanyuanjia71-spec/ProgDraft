@@ -6,7 +6,7 @@
 
 单位：**Zhejiang University**
 
-计划仓库：https://github.com/yuanyuanjia71-spec/ProgDraft
+仓库：https://github.com/yuanyuanjia71-spec/ProgDraft
 
 论文链接与许可证：**TBD**，确定后补充；当前没有正式 `LICENSE`。
 

@@ -10,4 +10,5 @@ authors:
     given-names: Qianqian
     affiliation: Zhejiang University
 version: 0.1.0
-abstract: "Code for Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR. Planned repository: github.com/yuanyuanjia71-spec/ProgDraft. Paper link and license TBD."
+abstract: "Code for Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR. Repository: github.com/yuanyuanjia71-spec/ProgDraft. Paper link and license TBD."
+repository-code: "https://github.com/yuanyuanjia71-spec/ProgDraft"

@@ -1,6 +1,6 @@
 # ProgDraft 论文公开代码整理与验证记录
 
-- 仓库名：ProgDraft；计划地址 `github.com/yuanyuanjia71-spec/ProgDraft`。
+- 仓库名：ProgDraft；仓库地址 `github.com/yuanyuanjia71-spec/ProgDraft`。
 - README 标题：ProgDraft: Acoustic Progress Propagation for Speculative ASR。
 - 论文标题：Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR。
 - 作者：Yuanyuan Jia, Qianqian Yang；单位：Zhejiang University。
@@ -27,4 +27,4 @@
 
 公开 Git 内容不包含原始音频、转录、本机绝对路径、上游 target 权重或训练 optimizer 状态。两个规模的最终/初始 safetensors 权重共约 727 MB，暂存本地忽略目录，不进入源码提交。
 
-正式许可证、论文链接、权重/完整缓存公开下载地址仍待填写。新 GitHub 仓库地址为计划地址；本文档不表示已创建或公开该仓库。
+正式许可证、论文链接、权重/完整缓存公开下载地址仍待填写。源码发布到上述 GitHub 仓库；正式权重和完整训练缓存不随源码提交。
