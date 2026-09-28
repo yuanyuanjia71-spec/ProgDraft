@@ -41,9 +41,30 @@ Assets go to ignored `artifacts/demo/`; machine paths stay in ignored `demo/loca
 - Each real speculative round displays eight proposed token IDs/text pieces. Green is the accepted draft prefix; red is the first rejection; gray is the unaccepted/unverified suffix. Accepted EOS ends a round without inventing a rejection or bonus. Target correction/bonus is shown separately.
 - Ours' waveform overlay uses the actual live L21 initialization and recursive positions. d1 attention remains unrestricted; Gaussian correction starts at d2. Raw positions and clamped bias centers are distinguished. Time coordinates are the existing runtime's uniform audio-memory duration midpoints, not an added forced-alignment estimate. Round review is available after completion.
 - Total accepted draft tokens exclude correction/bonus. Average draft acceptance is that count divided by rounds. The separately labeled paper quantity τ is **actual emitted tokens / rounds**, including correction/bonus only when emitted.
-- The shared `runtime.execute` performs warm-up for each path, then a complete target-only reference. Real observed AnchorDraft and Ours runs stream to the page. Separate **callback-free** runs provide latency and speedup; HTML rendering, trace copies and network delivery are not hidden inside a model-only measurement.
+- The shared `runtime.execute` performs warm-up for each path, then a complete target-only reference. AnchorDraft and Ours are recorded independently on the same GPU, using a minimal observer that only appends the existing CPU event snapshots. Token text rendering and per-prefix checks happen after the recorded run. Separate **callback-free** runs provide latency and speedup.
 - Decode timing starts after audio representation preparation and includes target prompt prefill, generation, draft/predictor forwards, L21 extraction, Gaussian bias, batched verification, cache operations, and correction/bonus target forwards. CUDA synchronizes only at existing measurement boundaries. Speedup = target-only decode time / method decode time. Weights loading and warm-up are excluded. This is a single-audio demonstration, not a replacement for the paper's multi-utterance benchmark.
-- All paths run sequentially on the same GPU. During live decoding the page labels elapsed time as observational; speedup appears only after a complete unobserved pass. Every observed committed prefix and both final observed/unobserved token sequences must equal target-only AR. A mismatch fails visibly and suppresses comparison speedups; there is no fallback transcript or extra canonical guard inside the decoder.
+- After recording, both panels start at the same zero time. `replay_timeline` merges the original `observed_decode_s` timestamps; it never aligns round numbers or rescales one arm to its callback-free latency. A common playback rate controls both panels (default 0.1×). A finished panel stops while the other continues. This is synchronized replay of independent runs, not concurrent GPU benchmarking. Every observed committed prefix and both final observed/unobserved token sequences must equal target-only AR. A mismatch fails visibly and suppresses comparison speedups; there is no fallback transcript or extra canonical guard inside the decoder.
+
+## Academic project page and video
+
+The public [project page](https://yuanyuanjia71-spec.github.io/ProgDraft/) provides a playable MP4 and an interactive shared-clock replay without requiring a GPU. The static player consumes real event records, not a fabricated token stream. The single displayed example is the first LibriSpeech test-clean item in the fixed manifest, not selected by outcome. Its trace stores checkpoint hashes, GPU, sample identity, exact token IDs, original timestamps and separate observed/callback-free measurements. It contains no waveform file or model weights.
+
+To recreate the trace and serve the page locally:
+
+```bash
+python demo/export_replay.py --preset 0 --output site/assets/demo-trace.json
+python -m http.server 8765 --directory site
+```
+
+Then open `http://127.0.0.1:8765`. The export reuses `DemoBackend.capture` and the existing runtime. To record the same player as an MP4 (both sides uniformly slowed to 0.05×), install Playwright/Chromium and ffmpeg in a separate recording environment, then run:
+
+```bash
+pip install playwright
+python -m playwright install chromium
+python demo/record_project_video.py
+```
+
+The recording has a visible playback rate and shared decode clock. It does not use video duration as a benchmark. GitHub Pages publishes only `site/`; Gradio inference stays local.
 
 ## Code path
 

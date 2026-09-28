@@ -92,7 +92,9 @@ def method_panel(view, method, review_round=None):
             parts.append('</div>')
         parts.append('</div>')
     if state['exact']:
-        parts.append('<div class="exact">✓ 完整 token ID 序列与 Target-only greedy AR 一致</div>')
+        elapsed = state.get('observed', {}).get('decode_s')
+        finish = f' · 记录完成时间 {elapsed:.3f}s' if elapsed is not None else ''
+        parts.append(f'<div class="exact">✓ 完整 token ID 序列与 Target-only greedy AR 一致{finish}</div>')
     return '<div class="method-panel">' + ''.join(parts) + '</div>'
 
 
@@ -125,4 +127,6 @@ def metrics_html(view):
 
 def status_html(view):
     css = 'status error' if view['error'] else 'status success' if view['done'] else 'status'
-    return f'<div class="{css}">{escape(view["status"])}</div>'
+    timer = (f' · 共同时间轴 {view["replay_time"]:.3f}s · 两侧 {view["playback_rate"]:g}× 回放'
+             if view.get('playback_rate') else '')
+    return f'<div class="{css}">{escape(view["status"])}{timer}</div>'

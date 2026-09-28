@@ -11,6 +11,7 @@
   <a href="#方法概览">方法概览</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#demo">可视化 Demo</a> ·
+  <a href="https://yuanyuanjia71-spec.github.io/ProgDraft/">项目主页</a> ·
   <a href="#训练与评估">训练与评估</a> ·
   <a href="docs/README.md">完整文档</a>
 </p>
@@ -19,18 +20,20 @@
 
 ## Demo
 
-**AnchorDraft（固定 K=3 训练）与 Ours（Random-K[3,8] 训练），统一使用 K=8 推理。** 本地 Gradio 页面左右对比每轮草稿，显示接受/拒绝词元、波形上的声学进度、接受统计、解码延迟及与 Target-only greedy AR 的精确一致性检查。
+**AnchorDraft（固定 K=3 训练）与 Ours（Random-K[3,8] 训练），统一使用 K=8 推理。** 两侧从同一零时刻起跑，按各自真实时间戳更新词元、接受统计和声学进度；先完成的一侧停下，另一侧继续。
 
-https://github.com/user-attachments/assets/762d5aed-9996-410e-98f4-041fcda88ca0
+**[打开学术项目主页 →](https://yuanyuanjia71-spec.github.io/ProgDraft/)** — 可播放对比视频，或使用同步回放控件暂停、拖动时间轴、选择 1× / 0.25× / 0.1× / 0.05× 播放。
 
-*46 秒 MP4 演示视频。真实解码记录按轮放慢回放，便于观察词元和声学进度变化。延迟与加速比来自该单条音频独立、关闭观测回调的推理计时，不是视频播放时长，也不代表论文整体测试结果。两种方法的最终 token 序列均与 Target-only greedy AR 完全一致。运行下面的命令即可体验支持上传音频的交互版。*
+https://github.com/user-attachments/assets/7ffdf688-4642-46d0-a8ab-caac962b9550
+
+*同步 MP4 视频：两侧统一按 0.05×（放慢 20 倍）播放，不分别拉伸时间。原始推理在同一 GPU 独立运行，共同时间轴包含 prompt prefill 和生成阶段。项目页另列关闭观测后的独立延迟与加速比。两种方法的最终 token ID 序列均与 Target-only greedy AR 完全一致。这是单条音频展示，不是论文整体测试结果。*
 
 ```bash
 pip install -e '.[asr,demo]'
 python demo/app.py
 ```
 
-先按 [Demo 配置说明](demo/README.md) 指定已有权重和测试样例，不需要重新训练。浏览器打开 `http://127.0.0.1:7860`；远程 GPU 可转发端口 7860。
+先按 [Demo 配置说明](demo/README.md) 指定已有权重和测试样例，不需要重新训练。浏览器打开 `http://127.0.0.1:7860`；远程 GPU 可转发端口 7860。上传 WAV 或选择样例后，应用先独立实测两个方法，再从相同起点同步回放。
 
 ## 方法概览
 

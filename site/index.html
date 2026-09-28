@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!-- Academic project-page structure adapted from eliahuhorwitz/Academic-project-page-template.
+     See SITE_LICENSE.md. Model/research code is not covered by the website license. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProgDraft · Acoustic Progress Propagation for Speculative ASR</title>
+  <meta name="description" content="Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR. Watch AnchorDraft and ProgDraft decode the same speech on a shared timeline.">
+  <meta name="author" content="Yuanyuan Jia, Qianqian Yang">
+  <meta name="theme-color" content="#0f766e">
+  <meta property="og:title" content="ProgDraft: Acoustic Progress Propagation for Speculative ASR">
+  <meta property="og:description" content="The same speech. The same target. A longer accepted draft. A synchronized, timestamped comparison at K=8.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yuanyuanjia71-spec.github.io/ProgDraft/">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="replay.js"></script>
+</head>
+<body>
+  <a class="skip" href="#demo">Skip to demo</a>
+  <header class="hero">
+    <div class="eyebrow">SPEECH RECOGNITION · SPECULATIVE DECODING</div>
+    <h1 class="publication-title"><span>ProgDraft</span><br>Acoustic Progress Propagation<br>for Long-Horizon Speculative Decoding in ASR</h1>
+    <p class="publication-authors">Yuanyuan Jia <span>·</span> Qianqian Yang</p>
+    <p class="institution">Zhejiang University</p>
+    <nav class="publication-links" aria-label="Project resources">
+      <a class="button dark" href="https://github.com/yuanyuanjia71-spec/ProgDraft">Code ↗</a>
+      <a class="button" href="#demo">Watch the demo</a>
+      <a class="button" href="#interactive">Synchronized replay</a>
+      <span class="button pending" aria-disabled="true">Paper · coming soon</span>
+    </nav>
+    <p class="hero-summary">Follow the speech. Keep the draft moving.</p>
+  </header>
+  <main>
+    <section class="section teaser" id="demo" aria-labelledby="demo-title">
+      <h2 id="demo-title">Same starting line. Different finishing times.</h2>
+      <p class="section-intro">AnchorDraft and Ours decode the same audio with the same frozen target and inference horizon <i>K</i> = 8.</p>
+      <video id="comparison-video" controls playsinline muted preload="metadata" poster="assets/comparison-poster.jpg" aria-label="Synchronized AnchorDraft and ProgDraft decoding comparison">
+        <source src="assets/progdraft-synchronized.mp4" type="video/mp4">
+        <a href="assets/progdraft-synchronized.mp4">Download the comparison video</a>
+      </video>
+      <p class="caption">Real decoding runs, synchronized at <i>t</i> = 0. Both panels use their original elapsed timestamps and the same playback multiplier. This video shows one example, not aggregate benchmark results.</p>
+    </section>
+
+    <section class="section" id="interactive" aria-labelledby="replay-title">
+      <div class="section-heading"><div><div class="eyebrow">LOOK INSIDE EACH ROUND</div><h2 id="replay-title">Explore the synchronized run</h2></div><a class="text-link" href="https://github.com/yuanyuanjia71-spec/ProgDraft/blob/main/demo/README.md">Run your own audio ↗</a></div>
+      <div id="race" class="race" aria-label="Synchronized decoding replay">
+        <div class="race-heading">
+          <div><span class="brand">ProgDraft</span><span class="record-tag">RECORDED INFERENCE · K = 8</span></div>
+          <div class="shared-clock"><span>SHARED DECODE CLOCK</span><strong id="clock">0.000 <small>s</small></strong></div>
+        </div>
+        <div class="run-context" id="run-context">Loading exact-checked decoding records…</div>
+        <div class="method-grid">
+          <article class="method anchor" id="anchor-panel" aria-label="AnchorDraft">
+            <header><div><h3>AnchorDraft</h3><p>Fixed K=3 training · no runtime correction</p></div><span class="run-status" id="anchor-status">READY</span></header>
+            <div class="method-time"><strong id="anchor-time">0.000<span>s</span></strong><span id="anchor-round">Waiting to start</span></div>
+            <div class="completion-track"><div id="anchor-bar"></div></div>
+            <div class="transcript" id="anchor-transcript" aria-label="AnchorDraft committed transcript">Both methods start together.</div>
+            <div class="draft-heading"><span>CURRENT DRAFT</span><b id="anchor-accepted">— / 8 accepted</b></div>
+            <div class="tokens" id="anchor-tokens"></div>
+            <div class="extra-token" id="anchor-extra">Target correction / bonus appears here.</div>
+            <div class="wave-label">Full audio memory · no explicit progress trajectory</div>
+            <div class="wave" id="anchor-wave"></div>
+            <div class="counts"><span><b id="anchor-count">0</b> accepted draft tokens</span><span><b id="anchor-rounds">0</b> rounds</span><span>τ <b id="anchor-tau">—</b></span></div>
+            <div class="exact" id="anchor-exact">Final token-ID check pending</div>
+          </article>
+          <article class="method ours" id="ours-panel" aria-label="Ours ProgDraft">
+            <header><div><h3>Ours <span>ProgDraft</span></h3><p>Joint + Random-K[3,8] training</p></div><span class="run-status" id="ours-status">READY</span></header>
+            <div class="method-time"><strong id="ours-time">0.000<span>s</span></strong><span id="ours-round">Waiting to start</span></div>
+            <div class="completion-track"><div id="ours-bar"></div></div>
+            <div class="transcript" id="ours-transcript" aria-label="Ours committed transcript">Both methods start together.</div>
+            <div class="draft-heading"><span>CURRENT DRAFT</span><b id="ours-accepted">— / 8 accepted</b></div>
+            <div class="tokens" id="ours-tokens"></div>
+            <div class="extra-token" id="ours-extra">Target correction / bonus appears here.</div>
+            <div class="wave-label">Acoustic progress · <span id="progress-label">a₁ → a₂ → … → a₈</span></div>
+            <div class="wave" id="ours-wave"></div>
+            <div class="counts"><span><b id="ours-count">0</b> accepted draft tokens</span><span><b id="ours-rounds">0</b> rounds</span><span>τ <b id="ours-tau">—</b></span></div>
+            <div class="exact" id="ours-exact">Final token-ID check pending</div>
+          </article>
+        </div>
+        <div class="legend"><span class="green-dot">Accepted draft</span><span class="red-dot">First rejection</span><span class="gray-dot">Unaccepted / unverified suffix</span></div>
+        <div class="player-controls">
+          <button id="play" class="play-button" disabled>▶ Play together</button>
+          <button id="restart" title="Restart both methods" disabled>↺</button>
+          <input id="seek" type="range" min="0" max="1" step="0.001" value="0" aria-label="Shared decode timeline" disabled>
+          <label>Playback <select id="rate" disabled><option value="1">1× real time</option><option value="0.25">0.25× · 4× slower</option><option value="0.1" selected>0.1× · 10× slower</option><option value="0.05">0.05× · 20× slower</option></select></label>
+        </div>
+        <p class="race-note"><span id="playback-note">Both methods: 0.1× playback</span> · Independent runs on the same GPU; synchronized replay, not concurrent GPU benchmarking.</p>
+      </div>
+      <div class="measurement-card">
+        <h3>Independent timing, with observation disabled</h3>
+        <p>The animation above uses the measured duration of each <em>recorded</em> run, including trace overhead. The separate runs below disable observation. Neither timeline is rescaled to these numbers.</p>
+        <div class="table-scroll"><table><thead><tr><th>Method</th><th>Decode latency</th><th>Speedup vs AR</th><th>Mean accepted τ</th><th>Token-ID match</th></tr></thead><tbody id="measurements"></tbody></table></div>
+        <p class="small-note">Decode = prompt prefill + generation, after audio representation preparation. τ includes actual correction/bonus tokens. One utterance; not a paper benchmark aggregate.</p>
+      </div>
+    </section>
+
+    <section class="section explanation" id="method">
+      <div class="eyebrow">THE IDEA</div><h2>Propagate acoustic progress through the draft.</h2>
+      <p>A long draft needs to keep track of where it is in the speech. ProgDraft starts from the frozen target’s verification attention, predicts a positive acoustic displacement at each continuation step, and feeds the accumulated position back into audio cross-attention through a Gaussian bias.</p>
+      <figure><img src="assets/asr_fig1.png" alt="Progress-conditioned speculative ASR decoding architecture" loading="lazy"><figcaption>Acoustic progress is initialized once per round and propagated across draft steps.</figcaption></figure>
+      <figure><img src="assets/asr_fig2.png" alt="Shared drafter block with a progress predictor and Gaussian audio-attention bias" loading="lazy"><figcaption>The target remains frozen; it verifies the proposed token prefix.</figcaption></figure>
+    </section>
+
+    <section class="section reproducibility">
+      <h2>Try it locally</h2><p>Upload a WAV or select a fixed test preset in the Gradio app. Both methods use the existing checkpoints and shared inference/verifier implementation.</p>
+      <pre><code>pip install -e '.[asr,demo]'
+python demo/app.py</code></pre>
+      <p>Configure the checkpoints first using the <a href="https://github.com/yuanyuanjia71-spec/ProgDraft/blob/main/demo/README.md">demo setup guide</a>. Public checkpoint downloads and the paper link are pending.</p>
+      <details><summary>Recording protocol and provenance</summary><p id="provenance"></p><p>Original round times are measured after the existing verifier commits a prefix. The two GPU runs are independent and use identical hardware. Playback merges these times on one common clock; it does not align round numbers or normalize finishing times. The first LibriSpeech test-clean example in the fixed manifest was used without selection by outcome. No forced-alignment information enters inference.</p><p>Waveform markers show the actual clamped Gaussian centers; labels and tooltips retain raw recursive positions, which can exceed the audio duration. The trace includes both values.</p><p><a href="assets/demo-trace.json">Download the exact-checked timestamp record</a> · <a href="https://github.com/yuanyuanjia71-spec/ProgDraft/blob/main/demo/export_replay.py">Recording script</a></p></details>
+    </section>
+  </main>
+  <footer><p>Yuanyuan Jia · Qianqian Yang · Zhejiang University</p><p>Project page adapted from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>, originally based in part on <a href="https://nerfies.github.io/">Nerfies</a>. Website layout: <a href="SITE_LICENSE.md">CC BY-SA 4.0</a>. Research code license: TBD.</p></footer>
+  <noscript><p class="section">JavaScript is required for interactive replay. The MP4 video above is playable without it.</p></noscript>
+</body>
+</html>

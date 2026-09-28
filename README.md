@@ -16,6 +16,7 @@
   <a href="#overview">Overview</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#demo">Demo</a> ·
+  <a href="https://yuanyuanjia71-spec.github.io/ProgDraft/">Project page</a> ·
   <a href="#training">Training</a> ·
   <a href="#evaluation">Evaluation</a> ·
   <a href="docs/README.md">Documentation</a> ·
@@ -26,18 +27,20 @@
 
 ## Demo
 
-**AnchorDraft (fixed-K3 training) vs Ours (Random-K[3,8]), both decoding at K=8.** The local Gradio demo shows accepted/rejected draft tokens, acoustic progress on the waveform, acceptance statistics, decode latency and exact agreement with target-only greedy AR.
+**AnchorDraft (fixed-K3 training) vs Ours (Random-K[3,8]), both decoding at K=8.** Both panels start together on a shared clock: tokens, acceptance and acoustic progress advance at their original recorded times, and each method stops when its run finishes.
 
-https://github.com/user-attachments/assets/762d5aed-9996-410e-98f4-041fcda88ca0
+**[Open the project page →](https://yuanyuanjia71-spec.github.io/ProgDraft/)** — watch the comparison video, or pause, seek and replay both methods at 1× / 0.25× / 0.1× / 0.05× speed.
 
-*46-second MP4 demo. Real decoding events are replayed more slowly so each round is readable. Latency and speedup come from a separate, unobserved inference run on this single audio example, not the video playback duration or aggregate paper results. Both final token sequences match target-only greedy AR exactly. Launch the interactive app below to try your own audio.*
+https://github.com/user-attachments/assets/7ffdf688-4642-46d0-a8ab-caac962b9550
+
+*Synchronized MP4: both panels use the same 0.05× playback rate (20× slower), with no per-method time rescaling. The runs were recorded independently on the same GPU; the common clock includes prompt prefill and generation. The project page separately reports callback-free latency/speedup. Both final token-ID sequences exactly match target-only greedy AR. One audio example, not aggregate paper results.*
 
 ```bash
 pip install -e '.[asr,demo]'
 python demo/app.py
 ```
 
-Configure existing local checkpoints and optional test presets first; see the [demo setup](demo/README.md). Open `http://127.0.0.1:7860` on the GPU machine (or forward port 7860). No retraining is required.
+Configure existing local checkpoints and optional test presets first; see the [demo setup](demo/README.md). Open `http://127.0.0.1:7860` on the GPU machine (or forward port 7860). Upload a WAV or select a preset; the app independently measures both methods, then replays them from the same starting time. No retraining is required.
 
 ## Overview
 

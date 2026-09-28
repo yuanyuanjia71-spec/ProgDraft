@@ -25,7 +25,7 @@ def create_app(config):
     with gr.Blocks(title='ProgDraft · Long-horizon ASR', css=css, theme=gr.themes.Soft(primary_hue='teal')) as app:
         gr.Markdown('# ProgDraft\n### Hear the speech. Follow the draft.')
         gr.Markdown('长跨度投机解码 · AnchorDraft 与 Acoustic Progress Propagation 的逐轮对比')
-        gr.Markdown(f'**同一 Target：{model_id}　·　Greedy　·　K = 8　·　同一 GPU 顺序运行**')
+        gr.Markdown(f'**同一 Target：{model_id}　·　Greedy　·　K = 8　·　双侧同步起跑**')
         gr.Markdown(f'AnchorDraft 权重：{config.get("anchor_label", "local checkpoint")}  \n'
                     f'Ours 权重：{config.get("ours_label", "Joint + Random-K[3,8]")}')
         with gr.Row():
@@ -35,7 +35,8 @@ def create_app(config):
                 preset = gr.Dropdown(label='固定 Final Test 预设', choices=list(presets), value=None,
                                      info='也可直接上传自己的音频。')
                 start = gr.Button('开始真实解码对比', variant='primary')
-                gr.Markdown('先预热并运行 Target-only AR，然后顺序展示两个方法。模型首次加载需要一些时间。')
+                rate = gr.Dropdown(label='两侧统一播放倍率', choices=[('原速 1×', 1.0), ('放慢 4 倍 · 0.25×', 0.25), ('放慢 10 倍 · 0.1×', 0.1)], value=0.1)
+                gr.Markdown('先在同一 GPU 独立实测，再从同一零时刻同步回放。保留每轮原始时间戳；较快的一侧先完成。模型首次加载需要一些时间。')
         status = gr.HTML(status_html(view))
         gr.HTML('<div class="legend"><span class="accepted">绿色 · 已接受</span>'
                 '<span class="rejected">红色 · 首次拒绝</span><span class="unused">灰色 · 未接受/未验证</span></div>')
@@ -64,7 +65,7 @@ def create_app(config):
                     gr.update(interactive=current['done'] or current['error']),
                     gr.update(interactive=current['done'] or current['error']))
 
-        def compare(path):
+        def compare(path, playback_rate=0.1):
             current = initial_view()
             if not path:
                 current.update(error=True, status='请先上传 WAV 或选择预设。')
@@ -72,7 +73,7 @@ def create_app(config):
                 return
             yield render(current)
             try:
-                for event in backend.events(path):
+                for event in backend.events(path, playback_rate):
                     update_view(current, event)
                     yield render(current)
             except Exception as exc:
@@ -80,7 +81,7 @@ def create_app(config):
                 yield render(current)
 
         preset.change(select_preset, preset, audio, queue=False, api_name=False)
-        start.click(compare, audio, [status, left, right, metrics, reference, state, review, start, audio, preset],
+        start.click(compare, [audio, rate], [status, left, right, metrics, reference, state, review, start, audio, preset],
                     concurrency_limit=1, concurrency_id='single-gpu', api_name='compare')
         review.input(lambda n, current: method_panel(current, 'ours', n), [review, state], right,
                      queue=False, api_name=False)
