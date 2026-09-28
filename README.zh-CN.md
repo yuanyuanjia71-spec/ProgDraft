@@ -10,12 +10,31 @@
   <a href="README.md">English</a> ·
   <a href="#方法概览">方法概览</a> ·
   <a href="#快速开始">快速开始</a> ·
-  <a href="demo/README.md">可视化 Demo</a> ·
+  <a href="#demo">可视化 Demo</a> ·
   <a href="#训练与评估">训练与评估</a> ·
   <a href="docs/README.md">完整文档</a>
 </p>
 
 > **发布状态：**源码与配置已公开。论文、模型权重和冻结训练缓存的下载链接待补充。推理需要对应规模的 ProgDraft 权重；精确重放训练还需要原始初始化和缓存，详见[数据与资产](docs/data_and_assets.md)。
+
+## Demo
+
+**AnchorDraft（固定 K=3 训练）与 Ours（Random-K[3,8] 训练），统一使用 K=8 推理。** 本地 Gradio 页面左右对比每轮草稿，显示接受/拒绝词元、波形上的声学进度、接受统计、解码延迟及与 Target-only greedy AR 的精确一致性检查。
+
+<p align="center">
+  <a href="docs/assets/demo-preview.png">
+    <img src="docs/assets/demo-preview.png" alt="ProgDraft 实际运行页面：左侧 AnchorDraft、右侧 Ours；绿色为已接受词元，红色为首次拒绝，灰色为剩余草稿，并显示声学进度轨迹和 target-only 一致性检查。" width="1100">
+  </a>
+</p>
+
+*以上为本地真实运行截图，点击可查看大图。图中时间来自单条音频，不代表论文整体测试结果。README 展示页面预览；运行下面的命令即可打开可上传音频、逐轮查看的交互版。*
+
+```bash
+pip install -e '.[asr,demo]'
+python demo/app.py
+```
+
+先按 [Demo 配置说明](demo/README.md) 指定已有权重和测试样例，不需要重新训练。浏览器打开 `http://127.0.0.1:7860`；远程 GPU 可转发端口 7860。
 
 ## 方法概览
 
@@ -67,17 +86,6 @@ progdraft-decode \
 ```
 
 1.7B 使用对应配置与权重。更多参数见[安装](docs/installation.md)和[推理](docs/inference.md)。当前权重下载链接尚未发布，示例路径需要用户提供实际文件。
-
-## 本地可视化 Demo
-
-在相同音频、冻结 target 和 **K=8** 下，左右对比 AnchorDraft 与 Ours。逐轮显示绿色接受词元、红色首拒、灰色剩余草稿，以及波形上的声学进度、实时计数和最终 token ID 一致性检查。速度使用独立关闭观测的预热后运行测量。
-
-```bash
-pip install -e '.[asr,demo]'
-python demo/app.py
-```
-
-先按 [Demo 配置说明](demo/README.md) 指定已有权重和测试样例，不需要重新训练。浏览器打开 `http://127.0.0.1:7860`；远程 GPU 可转发端口 7860。
 
 ## 训练与评估
 

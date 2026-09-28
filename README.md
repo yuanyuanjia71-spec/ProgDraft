@@ -15,7 +15,7 @@
 <p align="center">
   <a href="#overview">Overview</a> ·
   <a href="#quick-start">Quick start</a> ·
-  <a href="demo/README.md">Live demo</a> ·
+  <a href="#demo">Demo</a> ·
   <a href="#training">Training</a> ·
   <a href="#evaluation">Evaluation</a> ·
   <a href="docs/README.md">Documentation</a> ·
@@ -23,6 +23,25 @@
 </p>
 
 > **Release status:** source code and configurations are available. Paper, checkpoint and frozen-cache download links are pending. Inference requires a matching ProgDraft checkpoint; exact training replay also requires the original initialization and caches. See [data and assets](docs/data_and_assets.md).
+
+## Demo
+
+**AnchorDraft (fixed-K3 training) vs Ours (Random-K[3,8]), both decoding at K=8.** The local Gradio demo shows accepted/rejected draft tokens, acoustic progress on the waveform, acceptance statistics, decode latency and exact agreement with target-only greedy AR.
+
+<p align="center">
+  <a href="docs/assets/demo-preview.png">
+    <img src="docs/assets/demo-preview.png" alt="Actual ProgDraft demo: AnchorDraft on the left and Ours on the right, with green accepted tokens, red first rejections, gray remaining tokens, an acoustic progress trajectory and exact target-only consistency checks." width="1100">
+  </a>
+</p>
+
+*Actual local run; click the preview to enlarge. The timings shown are for this single audio example, not aggregate paper results. The README displays a screenshot; launch the interactive app below to upload audio and inspect each decoding round.*
+
+```bash
+pip install -e '.[asr,demo]'
+python demo/app.py
+```
+
+Configure existing local checkpoints and optional test presets first; see the [demo setup](demo/README.md). Open `http://127.0.0.1:7860` on the GPU machine (or forward port 7860). No retraining is required.
 
 ## Overview
 
@@ -82,17 +101,6 @@ progdraft-decode \
 ```
 
 For 1.7B, use `configs/qwen3_asr_1.7b.json` and its matching checkpoint. [Inference](docs/inference.md) documents device selection, local target snapshots and output fields.
-
-## Local visualization demo
-
-Compare AnchorDraft and Ours at **K=8**: live accepted/rejected draft tokens, recursive acoustic positions on the waveform, exact target-only agreement, and separately measured decode speedup. Both paths reuse the repository's cached verifier.
-
-```bash
-pip install -e '.[asr,demo]'
-python demo/app.py
-```
-
-Configure existing local checkpoints and optional test presets first; see the [demo setup](demo/README.md). No retraining is required. Open `http://127.0.0.1:7860` on the GPU machine (or forward port 7860).
 
 ## Training
 
