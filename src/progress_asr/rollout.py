@@ -2,7 +2,27 @@
 import torch
 from .progress import SIGMA_SECONDS, _center
 
-def progress_rollout(draft, predictor, target, runner, context, depth: int) -> torch.Tensor:
+def strict_rollout(draft, target, runner, context, depth: int) -> torch.Tensor:
+    """Existing AnchorDraft-only research rollout, with unrestricted audio access.
+
+    Extracted from benchmark_draft_length_k45_native_lossless.strict_rollout;
+    no runtime correction window and no progress predictor.
+    """
+    embedding, head = target.thinker.get_input_embeddings(), target.thinker.lm_head
+    token = torch.tensor([context.current_token], device=runner.device)
+    z, kv = draft(embedding(token)[:, None], runner.audio_memory, runner.audio_mask,
+                  target_features=context.features)
+    candidates = [head(z[:, 0]).argmax(dim=-1)]
+    for _ in range(2, depth + 1):
+        z, kv = draft(embedding(candidates[-1])[:, None], runner.audio_memory, runner.audio_mask,
+                      recurrent_state=z, past_kv=kv)
+        candidates.append(head(z[:, 0]).argmax(dim=-1))
+    if int(kv[0].shape[-2]) != depth:
+        raise AssertionError(f"self-KV length {kv[0].shape[-2]} != K={depth}")
+    return torch.stack([token[0] for token in candidates])
+
+
+def progress_rollout(draft, predictor, target, runner, context, depth: int, *, trace=None) -> torch.Tensor:
     if context.verification_anchor_time_s is None or not context.q_from_current_verification:
         raise AssertionError("Joint rollout requires the current L21 verification anchor")
     embedding, head = target.thinker.get_input_embeddings(), target.thinker.lm_head
@@ -15,6 +35,9 @@ def progress_rollout(draft, predictor, target, runner, context, depth: int) -> t
     current_position = torch.tensor(
         [float(context.verification_anchor_time_s)], device=runner.device, dtype=torch.float32
     )
+    if trace is not None:
+        trace['positions'] = [current_position]
+        trace['centers'] = [current_position]  # d1 initializes position; its attention is unrestricted.
     token = torch.tensor([context.current_token], device=runner.device)
     z, kv = draft(
         embedding(token)[:, None], runner.audio_memory, runner.audio_mask,
@@ -40,6 +63,9 @@ def progress_rollout(draft, predictor, target, runner, context, depth: int) -> t
         if not holder:
             raise AssertionError("progress adapter was not invoked")
         current_position = holder["raw"]
+        if trace is not None:
+            trace['positions'].append(current_position)
+            trace['centers'].append(holder['center'])
         candidates.append(head(z[:, 0]).argmax(dim=-1))
     if int(kv[0].shape[-2]) != depth:
         raise AssertionError(f"self-KV length {kv[0].shape[-2]} != K={depth}")

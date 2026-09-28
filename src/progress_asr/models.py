@@ -1,4 +1,4 @@
-"""Pinned upstream target and tensor-only Ours checkpoint loading."""
+"""Pinned target and tensor-only drafter / optional progress checkpoint loading."""
 from pathlib import Path
 import torch
 from safetensors.torch import load_file
@@ -30,5 +30,6 @@ def make_models(config, device):
 def load_weights(draft, predictor, path, device='cpu'):
     tensors = load_file(str(Path(path)), device=str(device))
     draft.load_state_dict({k.removeprefix('drafter.'): v for k, v in tensors.items() if k.startswith('drafter.')}, strict=True)
-    predictor.load_state_dict({k.removeprefix('progress_predictor.'): v for k, v in tensors.items() if k.startswith('progress_predictor.')}, strict=True)
+    if predictor is not None:
+        predictor.load_state_dict({k.removeprefix('progress_predictor.'): v for k, v in tensors.items() if k.startswith('progress_predictor.')}, strict=True)
     return tensors

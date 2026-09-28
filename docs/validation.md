@@ -6,7 +6,7 @@ This records packaging checks, not a new training experiment or a replacement Fi
 
 ## Automated contracts
 
-Six tests pass in the tested environment: exact Random-K loss reduction; cumulative-prefix FA span mapping; EOS horizon clipping and empirical depth probabilities; teacher-forced token indexing and self-KV/position recursion; token-CE-only gradient connectivity; real verifier branch/crop behavior covering first rejection, full acceptance, bonus and EOS. The verifier unit test uses mocked target outputs but executes the actual extracted verifier function.
+The original six tests cover exact Random-K loss reduction; cumulative-prefix FA span mapping; EOS horizon clipping and empirical depth probabilities; teacher-forced token indexing and self-KV/position recursion; token-CE-only gradient connectivity; real verifier branch/crop behavior covering first rejection, full acceptance, bonus and EOS. The verifier unit test uses mocked target outputs but executes the actual extracted verifier function. Five additional demo tests cover observational parity, token rendering, decode events, exact-match failures and initial UI updates (11 tests with the pinned demo extra).
 
 ## Source equivalence
 
@@ -23,6 +23,19 @@ With feature/progress losses excluded, CE-only backward at the original step-0 i
 - Speculative round counts and accepted-draft counts equal the source run.
 
 The check used existing frozen final weights and the actual target KV cache. It measured correctness only; no new speedup is reported. It does not replace a full 1,000-utterance benchmark.
+
+## Demo checks — 2026-09-28
+
+The Gradio demo was checked on GPU 0 with the requested paper-table AnchorDraft
+(fixed-K3 training, source SHA-256 `1e04449b6ca9f5bcd46abf89a4f40a671ca2c200d6eb274af00f6f39ca1bc32f`)
+and the released 0.6B Ours Random-K[3,8] export, both at inference K=8. The first
+manifest sample from each of the five Final Test datasets was used, without
+outcome-based selection. On all five, both methods' observed and callback-free
+outputs equaled target-only AR token IDs; round counts and accepted-draft counts
+also matched between observed and unobserved passes. The UI was exercised in
+headless Chromium through preset selection, WAV upload, streaming completion and
+round review. No training or weight updates were performed. This verifies the
+demo integration, not a new full-dataset speed benchmark.
 
 ## Limits
 

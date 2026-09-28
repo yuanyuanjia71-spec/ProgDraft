@@ -15,6 +15,7 @@
 <p align="center">
   <a href="#overview">Overview</a> ·
   <a href="#quick-start">Quick start</a> ·
+  <a href="demo/README.md">Live demo</a> ·
   <a href="#training">Training</a> ·
   <a href="#evaluation">Evaluation</a> ·
   <a href="docs/README.md">Documentation</a> ·
@@ -81,6 +82,17 @@ progdraft-decode \
 ```
 
 For 1.7B, use `configs/qwen3_asr_1.7b.json` and its matching checkpoint. [Inference](docs/inference.md) documents device selection, local target snapshots and output fields.
+
+## Local visualization demo
+
+Compare AnchorDraft and Ours at **K=8**: live accepted/rejected draft tokens, recursive acoustic positions on the waveform, exact target-only agreement, and separately measured decode speedup. Both paths reuse the repository's cached verifier.
+
+```bash
+pip install -e '.[asr,demo]'
+python demo/app.py
+```
+
+Configure existing local checkpoints and optional test presets first; see the [demo setup](demo/README.md). No retraining is required. Open `http://127.0.0.1:7860` on the GPU machine (or forward port 7860).
 
 ## Training
 

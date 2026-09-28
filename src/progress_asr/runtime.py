@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from .data import audio_memory_times
 from .target_cache import CachedTargetRunner
-from .rollout import progress_rollout
+from .rollout import progress_rollout, strict_rollout
 
 
 def read_audio(path):
@@ -71,7 +71,7 @@ class WaveformRunner(CachedTargetRunner):
 
 
 @torch.inference_mode()
-def decode(runner, draft=None, predictor=None, k=8, max_new_tokens=512):
+def decode(runner, draft=None, predictor=None, k=8, max_new_tokens=512, *, on_round=None):
     if k < 1:
         raise ValueError('K must be positive')
     context = runner.prefill(capture_features=draft is not None)
@@ -85,13 +85,28 @@ def decode(runner, draft=None, predictor=None, k=8, max_new_tokens=512):
                 break
             context = runner.append_target_token(context, token, capture_features=False)
         else:
+            trace = {} if on_round is not None and predictor is not None else None
             with torch.autocast('cuda', dtype=torch.bfloat16):
-                candidates = progress_rollout(draft, predictor, runner.target, runner, context, k)
+                if predictor is None:
+                    candidates = strict_rollout(draft, runner.target, runner, context, k)
+                else:
+                    candidates = progress_rollout(draft, predictor, runner.target, runner, context, k, trace=trace)
             accepted, _, emitted, context = runner.verify_block(context, candidates)
             tokens.extend(emitted)
             rounds += 1
             accepted_sum += accepted
             distribution[accepted] += 1
+            if on_round is not None:
+                # Observation only: independent CPU snapshots, after the existing verifier
+                # commits/crops the cache. Never use post-rejection target predictions.
+                proposal_ids = candidates.tolist()
+                # Accepted EOS ends the round without a rejection or bonus.
+                rejected = accepted if accepted < k and len(emitted) > accepted else None
+                on_round(dict(round=rounds, candidates=proposal_ids, accepted=accepted,
+                              first_rejected=rejected, emitted=list(emitted), tokens=list(tokens),
+                              accepted_sum=accepted_sum, terminal=context is None,
+                              positions=torch.cat(trace['positions']).tolist() if trace else [],
+                              centers=torch.cat(trace['centers']).tolist() if trace else []))
             if context is None:
                 assert tokens[-1] == eos
                 break
@@ -103,13 +118,16 @@ def decode(runner, draft=None, predictor=None, k=8, max_new_tokens=512):
 
 
 @torch.inference_mode()
-def execute(target, processor, path, device, draft=None, predictor=None, k=8):
+def execute(target, processor, path, device, draft=None, predictor=None, k=8, *, on_round=None):
     torch.cuda.synchronize(device)
     start = time.perf_counter()
-    runner = WaveformRunner(target, processor, read_audio(path), device, capture=draft is not None)
+    runner = WaveformRunner(target, processor, read_audio(path), device, capture=predictor is not None)
     torch.cuda.synchronize(device)
     decode_start = time.perf_counter()
-    tokens, stats = decode(runner, draft, predictor, k)
+    def observe(event):
+        event['observed_decode_s'] = time.perf_counter() - decode_start
+        on_round(event)
+    tokens, stats = decode(runner, draft, predictor, k, on_round=observe if on_round is not None else None)
     text = processor.tokenizer.decode(tokens, skip_special_tokens=True)
     torch.cuda.synchronize(device)
     end = time.perf_counter()

@@ -10,6 +10,7 @@
   <a href="README.md">English</a> ·
   <a href="#方法概览">方法概览</a> ·
   <a href="#快速开始">快速开始</a> ·
+  <a href="demo/README.md">可视化 Demo</a> ·
   <a href="#训练与评估">训练与评估</a> ·
   <a href="docs/README.md">完整文档</a>
 </p>
@@ -66,6 +67,17 @@ progdraft-decode \
 ```
 
 1.7B 使用对应配置与权重。更多参数见[安装](docs/installation.md)和[推理](docs/inference.md)。当前权重下载链接尚未发布，示例路径需要用户提供实际文件。
+
+## 本地可视化 Demo
+
+在相同音频、冻结 target 和 **K=8** 下，左右对比 AnchorDraft 与 Ours。逐轮显示绿色接受词元、红色首拒、灰色剩余草稿，以及波形上的声学进度、实时计数和最终 token ID 一致性检查。速度使用独立关闭观测的预热后运行测量。
+
+```bash
+pip install -e '.[asr,demo]'
+python demo/app.py
+```
+
+先按 [Demo 配置说明](demo/README.md) 指定已有权重和测试样例，不需要重新训练。浏览器打开 `http://127.0.0.1:7860`；远程 GPU 可转发端口 7860。
 
 ## 训练与评估
 

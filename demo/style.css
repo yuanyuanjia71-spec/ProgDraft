@@ -1,0 +1,32 @@
+.gradio-container { max-width: 1480px !important; margin: auto; }
+.status { padding: 15px 18px; background: #eff6ff; color: #1e3a5f; border-left: 4px solid #3b82f6; border-radius: 8px; }
+.status.success, .exact { background: #ecfdf5; color: #166534; }
+.status.success { border-color: #16a34a; }
+.status.error { background: #fef2f2; color: #991b1b; border-color: #dc2626; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0; }
+.legend span { padding: 5px 12px; border-radius: 5px; font-size: 13px; }
+.accepted { background: #dcfce7; color: #166534; border-color: #86efac !important; }
+.rejected { background: #fee2e2; color: #991b1b; border-color: #fca5a5 !important; }
+.unused { background: #f1f5f9; color: #64748b; border-color: #cbd5e1 !important; }
+.tokens { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.token { display: inline-flex; flex-direction: column; min-width: 45px; padding: 4px 8px 7px; border: 1px solid; border-radius: 6px; }
+.token small { font-size: 10px; opacity: .7; }
+.token > span { font: 14px ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.round-heading { font-size: 13px; font-weight: 650; color: #334155; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
+.round-heading > span { font-weight: 400; }
+.round-history { max-height: 440px; overflow: auto; padding-right: 5px; }
+.round-card { padding: 15px 0; border-top: 1px solid #e2e8f0; }
+.transcript { padding: 16px; background: #f8fafc; border-radius: 8px; margin: 14px 0; }
+.transcript label { font-size: 12px; color: #64748b; }
+.transcript p { margin: 8px 0 0; color: #0f172a; line-height: 1.65; }
+.method-note, .empty { padding: 24px 18px; color: #64748b; background: #f8fafc; border-radius: 8px; line-height: 1.7; }
+.muted, .correction { font-size: 12px; color: #64748b; line-height: 1.7; margin: 8px 0; }
+.correction code { color: #1d4ed8; white-space: pre-wrap; }
+.wave svg { display: block; width: 100%; background: #fbfdff; border-radius: 8px; }
+.position-values { font: 11px ui-monospace, monospace; line-height: 1.8; color: #0f766e; padding: 8px; overflow-wrap: anywhere; }
+.exact { padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 12px; }
+.metrics { overflow-x: auto; }
+.metrics table { border-collapse: collapse; width: 100%; color: #0f172a; font-size: 13px; }
+.metrics th, .metrics td { padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+.metrics th { background: #f8fafc; color: #475569; }
+.metrics td:first-child, .metrics th:first-child { text-align: left; font-weight: 600; }

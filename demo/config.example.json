@@ -1,0 +1,10 @@
+{
+  "model_config": "../configs/qwen3_asr_0.6b.json",
+  "ours_weights": "../artifacts/0.6b/ours.safetensors",
+  "anchor_weights": "../artifacts/demo/anchordraft.safetensors",
+  "anchor_label": "Paper-table AnchorDraft, fixed-K3 training, step 14760",
+  "ours_label": "Joint + Random-K[3,8], step 14760",
+  "device": "cuda:0",
+  "max_audio_seconds": 60,
+  "presets": []
+}

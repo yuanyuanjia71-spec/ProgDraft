@@ -16,3 +16,4 @@ runs/
 *.flac
 .env
 *.log
+/demo/local_config.json
