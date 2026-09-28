@@ -21,13 +21,9 @@
 
 **AnchorDraft（固定 K=3 训练）与 Ours（Random-K[3,8] 训练），统一使用 K=8 推理。** 本地 Gradio 页面左右对比每轮草稿，显示接受/拒绝词元、波形上的声学进度、接受统计、解码延迟及与 Target-only greedy AR 的精确一致性检查。
 
-<p align="center">
-  <a href="docs/assets/demo-preview.png">
-    <img src="docs/assets/demo-preview.png" alt="ProgDraft 实际运行页面：左侧 AnchorDraft、右侧 Ours；绿色为已接受词元，红色为首次拒绝，灰色为剩余草稿，并显示声学进度轨迹和 target-only 一致性检查。" width="1100">
-  </a>
-</p>
+https://github.com/user-attachments/assets/762d5aed-9996-410e-98f4-041fcda88ca0
 
-*以上为本地真实运行截图，点击可查看大图。图中时间来自单条音频，不代表论文整体测试结果。README 展示页面预览；运行下面的命令即可打开可上传音频、逐轮查看的交互版。*
+*46 秒 MP4 演示视频。真实解码记录按轮放慢回放，便于观察词元和声学进度变化。延迟与加速比来自该单条音频独立、关闭观测回调的推理计时，不是视频播放时长，也不代表论文整体测试结果。两种方法的最终 token 序列均与 Target-only greedy AR 完全一致。运行下面的命令即可体验支持上传音频的交互版。*
 
 ```bash
 pip install -e '.[asr,demo]'

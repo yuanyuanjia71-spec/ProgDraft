@@ -28,13 +28,9 @@
 
 **AnchorDraft (fixed-K3 training) vs Ours (Random-K[3,8]), both decoding at K=8.** The local Gradio demo shows accepted/rejected draft tokens, acoustic progress on the waveform, acceptance statistics, decode latency and exact agreement with target-only greedy AR.
 
-<p align="center">
-  <a href="docs/assets/demo-preview.png">
-    <img src="docs/assets/demo-preview.png" alt="Actual ProgDraft demo: AnchorDraft on the left and Ours on the right, with green accepted tokens, red first rejections, gray remaining tokens, an acoustic progress trajectory and exact target-only consistency checks." width="1100">
-  </a>
-</p>
+https://github.com/user-attachments/assets/762d5aed-9996-410e-98f4-041fcda88ca0
 
-*Actual local run; click the preview to enlarge. The timings shown are for this single audio example, not aggregate paper results. The README displays a screenshot; launch the interactive app below to upload audio and inspect each decoding round.*
+*46-second MP4 demo. Real decoding events are replayed more slowly so each round is readable. Latency and speedup come from a separate, unobserved inference run on this single audio example, not the video playback duration or aggregate paper results. Both final token sequences match target-only greedy AR exactly. Launch the interactive app below to try your own audio.*
 
 ```bash
 pip install -e '.[asr,demo]'
