@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="350" viewBox="0 0 1120 350" role="img" aria-labelledby="title desc">
+  <title id="title">ProgDraft interactive demo</title>
+  <desc id="desc">Compare AnchorDraft and ProgDraft on the same audio. Open the demo and press Start demo to play.</desc>
+  <rect x="1" y="1" width="1118" height="348" rx="22" fill="#f3f6f4" stroke="#dce5e1"/>
+  <g font-family="Avenir Next, Avenir, Segoe UI, sans-serif">
+    <text x="40" y="60" font-size="28" font-weight="650" fill="#20332f">Same speech. A faster finish.</text>
+    <text x="40" y="94" font-size="16" fill="#60716c">Same audio · Same target · K = 8</text>
+    <rect x="40" y="123" width="510" height="104" rx="12" fill="#fff" stroke="#dce4e0"/>
+    <rect x="570" y="123" width="510" height="104" rx="12" fill="#fff" stroke="#a8cec0"/>
+    <text x="62" y="165" font-size="23" font-weight="650" fill="#20332f">AnchorDraft</text>
+    <text x="592" y="165" font-size="23" font-weight="650" fill="#20332f">ProgDraft</text>
+    <rect x="718" y="145" width="46" height="25" rx="5" fill="#e8f4ee"/>
+    <text x="741" y="163" font-size="13" text-anchor="middle" fill="#147568">Ours</text>
+    <text x="62" y="200" font-size="16" fill="#60716c">Ready to start</text>
+    <text x="592" y="200" font-size="16" fill="#60716c">Ready to start</text>
+    <rect x="40" y="255" width="234" height="54" rx="10" fill="#147568"/>
+    <path d="M62 273 L62 291 L76 282 Z" fill="#fff"/>
+    <text x="94" y="288" font-size="17" font-weight="600" fill="#fff">Open interactive demo</text>
+    <text x="1080" y="288" font-size="15" text-anchor="end" fill="#60716c">Click to start · Pause · Replay</text>
+  </g>
+</svg>

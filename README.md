@@ -27,13 +27,13 @@
 
 ## Demo
 
-**AnchorDraft (fixed-K3 training) vs Ours (Random-K[3,8]), both decoding at K=8.** Both panels start together on a shared clock: tokens, acceptance and acoustic progress advance at their original recorded times, and each method stops when its run finishes.
+**AnchorDraft vs ProgDraft · same audio, same target, K = 8.**
 
-**[Open the project page →](https://yuanyuanjia71-spec.github.io/ProgDraft/)** — watch the comparison video, or pause, seek and replay both methods at 1× / 0.25× / 0.1× / 0.05× speed.
+[![Open the interactive ProgDraft demo](site/assets/demo-preview.svg)](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)
 
-https://github.com/user-attachments/assets/7ffdf688-4642-46d0-a8ab-caac962b9550
+**[Open the interactive demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** Click **Start demo** to begin, then pause, seek, change speed or replay. Both methods follow their original recorded timestamps on one shared clock.
 
-*Synchronized MP4: both panels use the same 0.05× playback rate (20× slower), with no per-method time rescaling. The runs were recorded independently on the same GPU; the common clock includes prompt prefill and generation. The project page separately reports callback-free latency/speedup. Both final token-ID sequences exactly match target-only greedy AR. One audio example, not aggregate paper results.*
+One audio example; both final token sequences match target-only greedy decoding. Timing and experiment details are available below the player.
 
 ```bash
 pip install -e '.[asr,demo]'

@@ -20,13 +20,13 @@
 
 ## Demo
 
-**AnchorDraft（固定 K=3 训练）与 Ours（Random-K[3,8] 训练），统一使用 K=8 推理。** 两侧从同一零时刻起跑，按各自真实时间戳更新词元、接受统计和声学进度；先完成的一侧停下，另一侧继续。
+**AnchorDraft 与 ProgDraft · 相同音频、相同 Target、K = 8。**
 
-**[打开学术项目主页 →](https://yuanyuanjia71-spec.github.io/ProgDraft/)** — 可播放对比视频，或使用同步回放控件暂停、拖动时间轴、选择 1× / 0.25× / 0.1× / 0.05× 播放。
+[![打开 ProgDraft 交互演示](site/assets/demo-preview.svg)](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)
 
-https://github.com/user-attachments/assets/7ffdf688-4642-46d0-a8ab-caac962b9550
+**[打开交互 Demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** 点击 **Start demo** 后开始，可暂停、拖动进度、调整速度或重播。两种方法沿各自真实记录的时间戳，在同一时间轴上回放。
 
-*同步 MP4 视频：两侧统一按 0.05×（放慢 20 倍）播放，不分别拉伸时间。原始推理在同一 GPU 独立运行，共同时间轴包含 prompt prefill 和生成阶段。项目页另列关闭观测后的独立延迟与加速比。两种方法的最终 token ID 序列均与 Target-only greedy AR 完全一致。这是单条音频展示，不是论文整体测试结果。*
+演示使用一条音频，两种方法的最终 token 序列均与 Target-only greedy 解码一致。计时与实验详情可在播放器下方展开查看。
 
 ```bash
 pip install -e '.[asr,demo]'

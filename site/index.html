@@ -26,74 +26,65 @@
     <p class="institution">Zhejiang University</p>
     <nav class="publication-links" aria-label="Project resources">
       <a class="button dark" href="https://github.com/yuanyuanjia71-spec/ProgDraft">Code ↗</a>
-      <a class="button" href="#demo">Watch the demo</a>
-      <a class="button" href="#interactive">Synchronized replay</a>
+      <a class="button" href="#demo">Try the demo <span aria-hidden="true">↗</span></a>
       <span class="button pending" aria-disabled="true">Paper · coming soon</span>
     </nav>
     <p class="hero-summary">Follow the speech. Keep the draft moving.</p>
   </header>
   <main>
-    <section class="section teaser" id="demo" aria-labelledby="demo-title">
-      <h2 id="demo-title">Same starting line. Different finishing times.</h2>
-      <p class="section-intro">AnchorDraft and Ours decode the same audio with the same frozen target and inference horizon <i>K</i> = 8.</p>
-      <video id="comparison-video" controls playsinline muted preload="metadata" poster="assets/comparison-poster.jpg" aria-label="Synchronized AnchorDraft and ProgDraft decoding comparison">
-        <source src="assets/progdraft-synchronized.mp4" type="video/mp4">
-        <a href="assets/progdraft-synchronized.mp4">Download the comparison video</a>
-      </video>
-      <p class="caption">Real decoding runs, synchronized at <i>t</i> = 0. Both panels use their original elapsed timestamps and the same playback multiplier. This video shows one example, not aggregate benchmark results.</p>
-    </section>
-
-    <section class="section" id="interactive" aria-labelledby="replay-title">
-      <div class="section-heading"><div><div class="eyebrow">LOOK INSIDE EACH ROUND</div><h2 id="replay-title">Explore the synchronized run</h2></div><a class="text-link" href="https://github.com/yuanyuanjia71-spec/ProgDraft/blob/main/demo/README.md">Run your own audio ↗</a></div>
-      <div id="race" class="race" aria-label="Synchronized decoding replay">
-        <div class="race-heading">
-          <div><span class="brand">ProgDraft</span><span class="record-tag">RECORDED INFERENCE · K = 8</span></div>
-          <div class="shared-clock"><span>SHARED DECODE CLOCK</span><strong id="clock">0.000 <small>s</small></strong></div>
+    <section class="section demo-section" id="demo" aria-labelledby="replay-title">
+      <span id="interactive" class="anchor-target" aria-hidden="true"></span>
+      <div class="section-heading">
+        <div><h2 id="replay-title">Same speech. A faster finish.</h2><p class="section-intro">AnchorDraft and ProgDraft, side by side. Same target. K = 8.</p></div>
+        <a class="text-link" href="https://github.com/yuanyuanjia71-spec/ProgDraft/blob/main/demo/README.md">Try your own audio ↗</a>
+      </div>
+      <div id="race" class="race" aria-label="Interactive decoding comparison" aria-busy="true">
+        <div class="player-controls">
+          <button id="play" class="play-button" disabled><span aria-hidden="true">▶</span> Start demo</button>
+          <button id="restart" class="reset-button" aria-label="Reset demo" title="Reset to the beginning" disabled>↺ <span>Reset</span></button>
+          <div class="timeline"><input id="seek" type="range" min="0" max="1" step="any" value="0" aria-label="Shared decode timeline" disabled><div class="timeline-labels"><span>Decode time</span><span><span id="clock">0.000</span> / <span id="duration">—</span> s</span></div></div>
+          <label class="speed-control" for="rate">Speed <select id="rate" disabled><option value="1">1×</option><option value="0.25">0.25×</option><option value="0.1" selected>0.1×</option><option value="0.05">0.05×</option></select></label>
         </div>
-        <div class="run-context" id="run-context">Loading exact-checked decoding records…</div>
+        <p id="load-status" class="load-status" role="status">Loading demo…</p>
         <div class="method-grid">
           <article class="method anchor" id="anchor-panel" aria-label="AnchorDraft">
-            <header><div><h3>AnchorDraft</h3><p>Fixed K=3 training · no runtime correction</p></div><span class="run-status" id="anchor-status">READY</span></header>
-            <div class="method-time"><strong id="anchor-time">0.000<span>s</span></strong><span id="anchor-round">Waiting to start</span></div>
+            <header><h3>AnchorDraft</h3><span class="run-status" id="anchor-status">Ready</span></header>
+            <div class="method-time"><strong id="anchor-time">0.000<span>s</span></strong><span id="anchor-round">Ready to start</span></div>
             <div class="completion-track"><div id="anchor-bar"></div></div>
-            <div class="transcript" id="anchor-transcript" aria-label="AnchorDraft committed transcript">Both methods start together.</div>
-            <div class="draft-heading"><span>CURRENT DRAFT</span><b id="anchor-accepted">— / 8 accepted</b></div>
+            <div class="transcript is-empty" id="anchor-transcript" aria-label="AnchorDraft transcript" tabindex="0">Press Start demo to begin.</div>
+            <div class="draft-heading"><span>Draft tokens</span><b id="anchor-accepted">— / 8 accepted</b></div>
             <div class="tokens" id="anchor-tokens"></div>
-            <div class="extra-token" id="anchor-extra">Target correction / bonus appears here.</div>
-            <div class="wave-label">Full audio memory · no explicit progress trajectory</div>
+            <div class="extra-token" id="anchor-extra"></div>
+            <div class="wave-heading"><span>Audio</span><span>Full context</span></div>
             <div class="wave" id="anchor-wave"></div>
-            <div class="counts"><span><b id="anchor-count">0</b> accepted draft tokens</span><span><b id="anchor-rounds">0</b> rounds</span><span>τ <b id="anchor-tau">—</b></span></div>
-            <div class="exact" id="anchor-exact">Final token-ID check pending</div>
+            <div class="method-summary"><span><b id="anchor-count">0</b> draft tokens accepted</span><span id="anchor-exact" class="exact"></span></div>
           </article>
-          <article class="method ours" id="ours-panel" aria-label="Ours ProgDraft">
-            <header><div><h3>Ours <span>ProgDraft</span></h3><p>Joint + Random-K[3,8] training</p></div><span class="run-status" id="ours-status">READY</span></header>
-            <div class="method-time"><strong id="ours-time">0.000<span>s</span></strong><span id="ours-round">Waiting to start</span></div>
+          <article class="method ours" id="ours-panel" aria-label="ProgDraft">
+            <header><h3>ProgDraft <span class="ours-tag">Ours</span></h3><span class="run-status" id="ours-status">Ready</span></header>
+            <div class="method-time"><strong id="ours-time">0.000<span>s</span></strong><span id="ours-round">Ready to start</span></div>
             <div class="completion-track"><div id="ours-bar"></div></div>
-            <div class="transcript" id="ours-transcript" aria-label="Ours committed transcript">Both methods start together.</div>
-            <div class="draft-heading"><span>CURRENT DRAFT</span><b id="ours-accepted">— / 8 accepted</b></div>
+            <div class="transcript is-empty" id="ours-transcript" aria-label="ProgDraft transcript" tabindex="0">Press Start demo to begin.</div>
+            <div class="draft-heading"><span>Draft tokens</span><b id="ours-accepted">— / 8 accepted</b></div>
             <div class="tokens" id="ours-tokens"></div>
-            <div class="extra-token" id="ours-extra">Target correction / bonus appears here.</div>
-            <div class="wave-label">Acoustic progress · <span id="progress-label">a₁ → a₂ → … → a₈</span></div>
+            <div class="extra-token" id="ours-extra"></div>
+            <div class="wave-heading"><span>Acoustic progress</span><span id="progress-label">Across 8 draft steps</span></div>
             <div class="wave" id="ours-wave"></div>
-            <div class="counts"><span><b id="ours-count">0</b> accepted draft tokens</span><span><b id="ours-rounds">0</b> rounds</span><span>τ <b id="ours-tau">—</b></span></div>
-            <div class="exact" id="ours-exact">Final token-ID check pending</div>
+            <div class="method-summary"><span><b id="ours-count">0</b> draft tokens accepted</span><span id="ours-exact" class="exact"></span></div>
           </article>
         </div>
-        <div class="legend"><span class="green-dot">Accepted draft</span><span class="red-dot">First rejection</span><span class="gray-dot">Unaccepted / unverified suffix</span></div>
-        <div class="player-controls">
-          <button id="play" class="play-button" disabled>▶ Play together</button>
-          <button id="restart" title="Restart both methods" disabled>↺</button>
-          <input id="seek" type="range" min="0" max="1" step="0.001" value="0" aria-label="Shared decode timeline" disabled>
-          <label>Playback <select id="rate" disabled><option value="1">1× real time</option><option value="0.25">0.25× · 4× slower</option><option value="0.1" selected>0.1× · 10× slower</option><option value="0.05">0.05× · 20× slower</option></select></label>
-        </div>
-        <p class="race-note"><span id="playback-note">Both methods: 0.1× playback</span> · Independent runs on the same GPU; synchronized replay, not concurrent GPU benchmarking.</p>
+        <div class="race-footer"><div class="legend" aria-label="Token states"><span class="accepted-key">✓ Accepted</span><span class="rejected-key">× Rejected</span><span class="unused-key">· Unverified</span></div><span id="playback-note">0.1× speed · click to start</span></div>
       </div>
-      <div class="measurement-card">
-        <h3>Independent timing, with observation disabled</h3>
-        <p>The animation above uses the measured duration of each <em>recorded</em> run, including trace overhead. The separate runs below disable observation. Neither timeline is rescaled to these numbers.</p>
+      <p class="demo-caption">Recorded runs on the same GPU, replayed on one clock. One audio example.</p>
+      <details class="measurement-card">
+        <summary>Timing &amp; experiment details</summary>
+        <p id="run-context"></p>
+        <p>AnchorDraft: fixed K = 3 training, without runtime correction. ProgDraft: joint progress-aware training with Random-K[3,8]. Both decode at K = 8.</p>
+        <h3>Independent timing</h3>
+        <p>The replay uses the original recorded timestamps. These separate measurements disable observation; they do not rescale the replay.</p>
         <div class="table-scroll"><table><thead><tr><th>Method</th><th>Decode latency</th><th>Speedup vs AR</th><th>Mean accepted τ</th><th>Token-ID match</th></tr></thead><tbody id="measurements"></tbody></table></div>
-        <p class="small-note">Decode = prompt prefill + generation, after audio representation preparation. τ includes actual correction/bonus tokens. One utterance; not a paper benchmark aggregate.</p>
-      </div>
+        <p>Decode time includes prompt prefill and generation, after audio preparation. τ includes correction/bonus tokens. Independent runs on the same GPU; not a concurrent benchmark or an aggregate paper result.</p>
+        <a href="assets/progdraft-synchronized.mp4">Download the original recording ↗</a>
+      </details>
     </section>
 
     <section class="section explanation" id="method">
@@ -112,6 +103,6 @@ python demo/app.py</code></pre>
     </section>
   </main>
   <footer><p>Yuanyuan Jia · Qianqian Yang · Zhejiang University</p><p>Project page adapted from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>, originally based in part on <a href="https://nerfies.github.io/">Nerfies</a>. Website layout: <a href="SITE_LICENSE.md">CC BY-SA 4.0</a>. Research code license: TBD.</p></footer>
-  <noscript><p class="section">JavaScript is required for interactive replay. The MP4 video above is playable without it.</p></noscript>
+  <noscript><p class="section">JavaScript is required for interactive replay. <a href="assets/progdraft-synchronized.mp4">Watch the recorded video</a>.</p></noscript>
 </body>
 </html>
