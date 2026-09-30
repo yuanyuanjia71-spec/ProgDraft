@@ -13,7 +13,7 @@
     <text x="741" y="163" font-size="13" text-anchor="middle" fill="#147568">Ours</text>
     <text x="62" y="200" font-size="16" fill="#60716c">Ready to start</text>
     <text x="592" y="200" font-size="16" fill="#60716c">Ready to start</text>
-    <rect x="40" y="255" width="234" height="54" rx="10" fill="#147568"/>
+    <rect x="40" y="255" width="270" height="54" rx="10" fill="#147568"/>
     <path d="M62 273 L62 291 L76 282 Z" fill="#fff"/>
     <text x="94" y="288" font-size="17" font-weight="600" fill="#fff">Open interactive demo</text>
     <text x="1080" y="288" font-size="15" text-anchor="end" fill="#60716c">Click to start · Pause · Replay</text>
