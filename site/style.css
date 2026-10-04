@@ -30,7 +30,6 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .button { display: inline-flex; align-items: center; gap: 10px; padding: 9px 19px; border: 1px solid var(--line); border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 14px; color: var(--ink); }
 .button.dark { background: var(--ink); color: white; border-color: var(--ink); }
 .button:hover { border-color: var(--teal); }
-.button.pending { color: var(--muted); background: #f6f8f7; }
 .hero-summary { color: var(--muted); font-size: 18px; margin: 27px 0 0; }
 .section { max-width: 1440px; margin: 0 auto; padding: 40px 24px; }
 h2 { font-size: clamp(25px,2.5vw,34px); letter-spacing: -.035em; line-height: 1.25; margin: 0 0 12px; font-weight: 650; }
@@ -84,6 +83,7 @@ h2 { font-size: clamp(25px,2.5vw,34px); letter-spacing: -.035em; line-height: 1.
 .token .token-mark { font-size: 12px; flex-shrink: 0; }
 .token.accepted { background: #e9f5ed; border-color: #c1dec9; color: var(--green); }
 .token.rejected { background: #fceff0; border-color: #efccd2; color: var(--red); }
+.token.target-token { background: #f1ecf6; border-color: #dacfe5; color: #66527c; }
 .extra-token { height: 28px; font-size: 12px; color: var(--muted); padding-top: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .extra-token code { font-family: inherit; font-weight: 600; color: var(--ink); }
 .wave-heading { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); border-top: 1px solid #e6ece8; margin-top: 12px; padding-top: 14px; }
@@ -93,6 +93,7 @@ h2 { font-size: clamp(25px,2.5vw,34px); letter-spacing: -.035em; line-height: 1.
 .method-summary { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; border-top: 1px solid #e6ece8; margin-top: 8px; padding-top: 12px; color: var(--muted); font-size: 12px; }
 .method-summary b { color: var(--ink); font-size: 14px; }
 .exact { color: var(--teal); }
+.race-result { margin-top: 18px; padding: 12px 16px; background: #fff; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .race-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--muted); padding-top: 18px; }
 .legend { display: flex; flex-wrap: wrap; gap: 18px; }
 .accepted-key { color: var(--green); }

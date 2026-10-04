@@ -1,12 +1,14 @@
-/* Shared-clock replay of real round timestamps. No token generation or timing normalization.
+/* Measured three-way finish clock; recorded token events retain their original timestamps.
    Website player: CC BY-SA 4.0; see SITE_LICENSE.md. */
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
   const escape = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let data, duration = 0, elapsed = 0, playing = false, lastTick = 0, frame = null;
+  let referencePieces = [];
   let rate = Number($('rate').value);
   const previousRound = {ar: -1, anchor: -1, ours: -1};
+  let previousRaceText = '';
   if (new URLSearchParams(location.search).has('record')) document.body.classList.add('recording');
 
   function waveform(event) {
@@ -33,7 +35,7 @@
 
   function updateMethod(name) {
     const method = data.methods[name];
-    const finish = method.observed.decode_s;
+    const finish = method.measured.decode_s;
     const complete = elapsed >= finish;
     const rounds = method.rounds;
     let index = -1;
@@ -42,9 +44,11 @@
     $(name+'-time').innerHTML = `${Math.min(elapsed,finish).toFixed(3)}<span>s</span>`;
     $(name+'-status').textContent = complete ? 'Finished' : playing ? 'Decoding' : elapsed ? 'Paused' : 'Ready';
     $(name+'-status').classList.toggle('done',complete);
-    $(name+'-round').textContent = complete ? `${rounds.length} rounds` : event ? `Round ${event.round}` : elapsed ? 'Preparing…' : 'Ready to start';
-    $(name+'-exact').textContent = complete ? '✓ Exact token match' : '';
-    $(name+'-exact').classList.toggle('verified',complete);
+    const traceComplete=event && event.tokens.length===data.reference.tokens.length;
+    $(name+'-round').textContent = complete ? `${rounds.length} rounds` : traceComplete ? 'Recorded trace complete' : event ? `Round ${event.round}` : elapsed ? 'Preparing…' : 'Ready to start';
+    $(name+'-exact').textContent = complete && traceComplete ? '✓ Exact token match' : '';
+    $(name+'-exact').classList.toggle('verified',complete && traceComplete);
+    $(name+'-bar').style.width = `${100*Math.min(elapsed/finish,1)}%`;
     if (!event) $(name+'-transcript').textContent = elapsed > 0 ? 'Preparing the transcript…' : 'Press Start demo to begin.';
     if (previousRound[name] === index) return;
     previousRound[name] = index;
@@ -63,28 +67,47 @@
     $(name+'-extra').innerHTML = extra ? `${event.accepted===8?'Bonus':'Correction'}: <code>${escape(event.emitted_pieces.at(-1))}</code>` : event?.terminal ? 'End of transcript' : '';
     $(name+'-wave').innerHTML = waveform(name==='ours' ? event : null);
     $(name+'-count').textContent = event?.accepted_sum || 0;
-    $(name+'-bar').style.width = `${event ? 100*event.tokens.length/data.reference.tokens.length : 0}%`;
     if (name==='ours') $('progress-label').textContent = event ? `${event.positions[0].toFixed(1)} → ${event.positions.at(-1).toFixed(1)} s` : 'Across 8 draft steps';
   }
 
   function updateTarget() {
     const method=data.methods.ar;
-    if (!method) return;
-    const finish=method.observed.decode_s;
+    const finish=data.reference.decode_s;
     const complete=elapsed>=finish;
     let index=-1;
-    for (let i=0; i<method.rounds.length && method.rounds[i].observed_decode_s<=elapsed; i++) index=i;
-    const event=method.rounds[index];
+    if (method) for (let i=0; i<method.rounds.length && method.rounds[i].observed_decode_s<=elapsed; i++) index=i;
+    const event=method?.rounds[index];
+    const traceComplete=event && event.tokens.length===data.reference.tokens.length;
     $('target-latency').innerHTML=`${Math.min(elapsed,finish).toFixed(3)}<span>s</span>`;
     $('target-status').textContent=complete ? 'Finished' : playing ? 'Decoding' : elapsed ? 'Paused' : 'Ready';
     $('target-status').classList.toggle('done',complete);
-    $('target-bar').style.width=`${event ? 100*event.tokens.length/data.reference.tokens.length : 0}%`;
-    if (previousRound.ar===index) return;
+    $('target-time-label').textContent=complete ? 'Measured finish' : event ? `Token ${event.token_index}` : elapsed ? 'Greedy decoding' : 'Ready to start';
+    $('target-bar').style.width=`${100*Math.min(elapsed/finish,1)}%`;
+    $('target-exact').textContent=complete && (!method || traceComplete) ? 'Reference token IDs' : '';
+    if (previousRound.ar===index && method) return;
     previousRound.ar=index;
-    $('target-token-count').textContent=event?.tokens.length || 0;
-    $('target-transcript').textContent=event?.text || (elapsed ? 'Preparing the transcript…' : 'Press Start demo to begin.');
-    $('target-transcript').classList.toggle('is-empty',!event?.text);
+    const text=event?.text || (!method && complete ? data.reference.text : elapsed ? 'Decoding…' : 'Press Start demo to begin.');
+    $('target-token-count').textContent=event?.tokens.length || (!method && complete ? data.reference.tokens.length : 0);
+    $('target-transcript').textContent=text;
+    $('target-transcript').classList.toggle('is-empty',!event?.text && !(!method && complete));
     $('target-transcript').scrollTop=$('target-transcript').scrollHeight;
+    $('target-step').textContent=event ? `Token ${event.token_index} / ${data.reference.tokens.length}` : complete ? `${data.reference.tokens.length} tokens emitted` : method ? 'Waiting for first token' : 'Per-token trace unavailable';
+    const recent=method ? method.rounds.slice(Math.max(0,index-7),index+1).map(step=>({id:step.emitted[0],piece:step.piece})) : complete ? data.reference.tokens.map((id,i)=>({id,piece:referencePieces[i] ?? String(id)})).slice(-8) : [];
+    $('target-tokens').innerHTML=Array.from({length:8},(_,i)=>{
+      const token=recent[i];
+      return `<div class="token ${token ? 'target-token' : 'unused'}" title="${token ? `Target token ID ${escape(token.id)}` : 'No token event'}"><code>${token ? escape(token.piece || '∅') : '—'}</code><span class="token-mark" aria-hidden="true">${token ? '✓' : ''}</span></div>`;
+    }).join('');
+  }
+
+  function updateRaceResult() {
+    const finishes=[
+      ['ProgDraft',data.methods.ours.measured.decode_s],
+      ['AnchorDraft',data.methods.anchor.measured.decode_s],
+      ['Target-only',data.reference.decode_s],
+    ].sort((a,b)=>a[1]-b[1]);
+    const completed=finishes.filter(([,seconds])=>elapsed>=seconds);
+    const result=completed.length ? `Finish order: ${completed.map(([name,seconds],i)=>`${i+1}. ${name} ${seconds.toFixed(3)} s`).join('  ·  ')}${completed.length<3 ? '  ·  others still running' : ''}` : 'All three start together. Watch their measured finish times.';
+    if (result!==previousRaceText) $('race-result').textContent=previousRaceText=result;
   }
 
   function render() {
@@ -92,6 +115,7 @@
     $('seek').setAttribute('aria-valuetext', `${elapsed.toFixed(3)} of ${duration.toFixed(3)} seconds`);
     $('seek').value = elapsed;
     updateTarget(); updateMethod('anchor'); updateMethod('ours');
+    updateRaceResult();
     $('playback-note').textContent = `${rate}× speed${rate<1 ? ` · ${1/rate}× slower` : ' · real time'}`;
     $('play').textContent = playing ? 'Ⅱ Pause' : elapsed >= duration ? '↺ Replay demo' : elapsed > 0 ? '▶ Resume' : '▶ Start demo';
     $('play').setAttribute('aria-label', playing ? 'Pause demo' : elapsed >= duration ? 'Replay demo' : elapsed > 0 ? 'Resume demo' : 'Start demo');
@@ -146,19 +170,15 @@
       }
       if (!method.rounds.length || JSON.stringify(method.rounds.at(-1).tokens)!==JSON.stringify(data.reference.tokens)) throw new Error('Incomplete speculative trace');
     }
-    duration=Math.max(data.methods.anchor.observed.decode_s,data.methods.ours.observed.decode_s,data.methods.ar?.observed.decode_s || 0);
-    $('target-latency').innerHTML=`${data.reference.decode_s.toFixed(3)}<span>s</span>`;
-    $('target-transcript').textContent=data.reference.text;
-    $('target-token-count').textContent=data.reference.tokens.length;
-    $('target-bar').style.width='100%';
+    referencePieces=data.methods.anchor.rounds.flatMap(event=>event.emitted_pieces);
+    if (referencePieces.length!==data.reference.tokens.length) throw new Error('Incomplete target token pieces');
+    duration=Math.max(data.reference.decode_s,data.methods.anchor.measured.decode_s,data.methods.ours.measured.decode_s,
+      data.methods.anchor.observed.decode_s,data.methods.ours.observed.decode_s,data.methods.ar?.observed.decode_s || 0);
     $('target-wave').innerHTML=waveform(null);
     if (data.methods.ar) {
-      $('target-time-label').textContent='Observed decode clock';
-      $('target-note').textContent=`Per-token timestamps from an independent recorded run. Callback-free baseline: ${data.reference.decode_s.toFixed(3)} s.`;
-      $('target-status').textContent='Ready';
-      $('target-status').classList.remove('done');
-      $('demo-caption').textContent='Three independent runs on the same GPU, replayed from one zero time using their recorded event timestamps.';
-      $('timeline-detail').textContent='All three replay traces use their original recorded timestamps. The latency table uses separate callback-free runs and does not rescale the replay.';
+      $('target-note').textContent=`Target-only token events retain their recorded timestamps. Its finish clock uses the independent ${data.reference.decode_s.toFixed(3)} s callback-free measurement.`;
+      $('demo-caption').textContent='All three timers start together and finish at independently measured decode latencies. Token events retain their recorded timestamps.';
+      $('timeline-detail').textContent='All three finish times use independent callback-free measurements. Token events retain their original recorded timestamps, so a transcript may complete before or after its measured finish clock.';
     }
     $('seek').max=duration;
     $('duration').textContent=duration.toFixed(3);

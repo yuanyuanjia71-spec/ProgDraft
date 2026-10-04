@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Paper link and publication details are TBD; update this record when the preprint is public."
+message: "If you use ProgDraft, please cite the associated arXiv preprint."
 title: "ProgDraft: Acoustic Progress Propagation for Speculative ASR"
 type: software
 authors:
@@ -10,5 +10,15 @@ authors:
     given-names: Qianqian
     affiliation: Zhejiang University
 version: 0.1.0
-abstract: "Code for Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR. Repository: github.com/yuanyuanjia71-spec/ProgDraft. Paper link and license TBD."
+abstract: "Code for Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR. Associated preprint: arXiv:2609.33245."
 repository-code: "https://github.com/yuanyuanjia71-spec/ProgDraft"
+preferred-citation:
+  type: generic
+  title: "Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR"
+  authors:
+    - family-names: Jia
+      given-names: Yuanyuan
+    - family-names: Yang
+      given-names: Qianqian
+  year: 2026
+  url: "https://arxiv.org/abs/2609.33245"

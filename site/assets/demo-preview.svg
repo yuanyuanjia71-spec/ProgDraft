@@ -13,7 +13,7 @@
     <text x="768" y="165" font-size="23" font-weight="650" fill="#20332f">ProgDraft</text>
     <rect x="894" y="145" width="46" height="25" rx="5" fill="#e8f4ee"/>
     <text x="917" y="163" font-size="13" text-anchor="middle" fill="#147568">Ours</text>
-    <text x="62" y="200" font-size="16" fill="#60716c">Measured AR baseline</text>
+    <text x="62" y="200" font-size="16" fill="#60716c">Ready to start</text>
     <text x="415" y="200" font-size="16" fill="#60716c">Ready to start</text>
     <text x="768" y="200" font-size="16" fill="#60716c">Ready to start</text>
     <rect x="40" y="255" width="270" height="54" rx="10" fill="#147568"/>

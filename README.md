@@ -16,6 +16,7 @@
   <a href="#overview">Overview</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#demo">Demo</a> ·
+  <a href="https://arxiv.org/abs/2609.33245">Paper</a> ·
   <a href="https://yuanyuanjia71-spec.github.io/ProgDraft/">Project page</a> ·
   <a href="#training">Training</a> ·
   <a href="#evaluation">Evaluation</a> ·
@@ -23,7 +24,7 @@
   <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-> **Release status:** source code and configurations are available. Paper, checkpoint and frozen-cache download links are pending. Inference requires a matching ProgDraft checkpoint; exact training replay also requires the original initialization and caches. See [data and assets](docs/data_and_assets.md).
+> **Release status:** the [arXiv preprint](https://arxiv.org/abs/2609.33245), source code and configurations are available. Checkpoint and frozen-cache download links are pending. Inference requires a matching ProgDraft checkpoint; exact training replay also requires the original initialization and caches. See [data and assets](docs/data_and_assets.md).
 
 ## Demo
 
@@ -31,9 +32,9 @@
 
 [![Open the interactive ProgDraft demo](site/assets/demo-preview.svg)](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)
 
-**[Open the interactive demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** Click **Start demo** to begin, then pause, seek, change speed or replay. AnchorDraft and ProgDraft follow their original recorded timestamps on one shared clock.
+**[Open the interactive demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** Click **Start demo** to start all three timers together, then pause, seek, change speed or replay. Their finish order uses independently measured callback-free decode latency; recorded token events retain their original timestamps.
 
-One audio example; all final token sequences match target-only greedy decoding. The archived site trace shows Target-only measured latency and final text; the local demo also replays its real per-token timestamps. Timing and experiment details are available below the player.
+One audio example; all final token sequences match target-only greedy decoding. The archived site trace animates Target-only's measured timer and reveals its final text at completion; it has no per-token AR timestamps. The local demo also replays real per-token AR timestamps. Timing and experiment details are available below the player.
 
 ```bash
 pip install -e '.[asr,demo]'
@@ -154,7 +155,7 @@ Start with the [documentation index](docs/README.md). The [validation record](do
 
 Yuanyuan Jia and Qianqian Yang, Zhejiang University.
 
-The paper link and publication details will be added when available. Software citation metadata are provided in [CITATION.cff](CITATION.cff).
+[arXiv:2609.33245](https://arxiv.org/abs/2609.33245), 2026. Citation metadata are provided in [CITATION.cff](CITATION.cff).
 
 ## Acknowledgments and license
 

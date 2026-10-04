@@ -1,6 +1,6 @@
 # Documentation
 
-[Project home](../README.md) · [简体中文](../README.zh-CN.md)
+[Project home](../README.md) · [Paper](https://arxiv.org/abs/2609.33245) · [简体中文](../README.zh-CN.md)
 
 ProgDraft implements acoustic progress propagation with Random-K[3,8] training for frozen Qwen3-ASR targets. Choose a guide by task:
 

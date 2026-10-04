@@ -37,29 +37,65 @@ async function load(trace) {
 
 (async () => {
   const old = await load(archived);
-  assert.equal(old.elements.get('target-transcript').textContent, archived.reference.text);
+  assert.equal(old.elements.get('target-transcript').textContent, 'Press Start demo to begin.');
+  assert.equal(old.elements.get('target-status').textContent, 'Ready');
+  old.elements.get('play').onclick();
+  for (const name of ['target', 'anchor', 'ours']) {
+    assert.equal(old.elements.get(`${name}-status`).textContent, 'Decoding');
+  }
+  const firstAnchorEvent = archived.methods.anchor.rounds[0].observed_decode_s;
+  old.replay.seek(firstAnchorEvent - .001);
+  assert.equal(old.elements.get('anchor-round').textContent, 'Preparing…');
+  old.replay.seek(firstAnchorEvent);
+  assert.equal(old.elements.get('anchor-round').textContent, 'Round 1');
+  const oursFinish = archived.methods.ours.measured.decode_s;
+  const anchorFinish = archived.methods.anchor.measured.decode_s;
+  const targetFinish = archived.reference.decode_s;
+  old.replay.seek((oursFinish+anchorFinish)/2);
+  assert.equal(old.elements.get('ours-status').textContent, 'Finished');
+  assert.match(old.elements.get('ours-time').innerHTML,
+    new RegExp(oursFinish.toFixed(3)));
+  assert.equal(old.elements.get('ours-bar').style.width, '100%');
+  assert.equal(old.elements.get('anchor-status').textContent, 'Paused');
+  assert.equal(old.elements.get('target-status').textContent, 'Paused');
+  assert.ok(parseFloat(old.elements.get('target-bar').style.width) < 100);
+  assert.match(old.elements.get('race-result').textContent, /1\. ProgDraft/);
+  old.replay.seek((anchorFinish+targetFinish)/2);
+  assert.equal(old.elements.get('anchor-status').textContent, 'Finished');
+  assert.equal(old.elements.get('target-status').textContent, 'Paused');
+  assert.equal(old.elements.get('target-token-count').textContent, 0);
+  old.replay.seek(targetFinish);
+  assert.equal(old.elements.get('target-status').textContent, 'Finished');
   assert.match(old.elements.get('target-latency').innerHTML,
-    new RegExp(archived.reference.decode_s.toFixed(3)));
-  old.replay.seek(.4);
+    new RegExp(targetFinish.toFixed(3)));
+  assert.equal(old.elements.get('target-bar').style.width, '100%');
   assert.equal(old.elements.get('target-transcript').textContent, archived.reference.text);
+  assert.equal(old.elements.get('target-token-count').textContent, archived.reference.tokens.length);
+  assert.match(old.elements.get('target-tokens').innerHTML, /Target token ID/);
+  assert.match(old.elements.get('race-result').textContent, /3\. Target-only/);
+  old.elements.get('restart').onclick();
+  assert.equal(old.elements.get('target-transcript').textContent, 'Press Start demo to begin.');
 
   const current = structuredClone(archived);
   current.methods.ar = {
     exact: true, observed: {...current.reference, decode_s: .96},
     measured: current.reference,
     rounds: [
-      {token_index: 1, tokens: current.reference.tokens.slice(0, 1), text: 'From', observed_decode_s: .1},
+      {token_index: 1, emitted: [current.reference.tokens[0]], piece: 'From',
+        tokens: current.reference.tokens.slice(0, 1), text: 'From', observed_decode_s: .1},
       {token_index: current.reference.tokens.length, tokens: current.reference.tokens,
+        emitted: [current.reference.tokens.at(-1)], piece: '<end>',
         text: current.reference.text, observed_decode_s: .94},
     ],
   };
   const fresh = await load(current);
-  assert.match(fresh.elements.get('demo-caption').textContent, /Three independent runs/);
+  assert.match(fresh.elements.get('demo-caption').textContent, /All three timers/);
   fresh.replay.seek(.2);
   assert.equal(fresh.elements.get('target-transcript').textContent, 'From');
   assert.equal(fresh.elements.get('target-token-count').textContent, 1);
   fresh.replay.seek(.96);
   assert.equal(fresh.elements.get('target-transcript').textContent, current.reference.text);
   assert.equal(fresh.elements.get('target-token-count').textContent, current.reference.tokens.length);
+  assert.match(fresh.elements.get('target-tokens').innerHTML, /&lt;end&gt;/);
   process.stdout.write('site replay: archived baseline and timestamped AR trace passed\n');
 })().catch(error => {console.error(error); process.exitCode = 1;});

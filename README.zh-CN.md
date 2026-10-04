@@ -11,12 +11,13 @@
   <a href="#方法概览">方法概览</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#demo">可视化 Demo</a> ·
+  <a href="https://arxiv.org/abs/2609.33245">论文</a> ·
   <a href="https://yuanyuanjia71-spec.github.io/ProgDraft/">项目主页</a> ·
   <a href="#训练与评估">训练与评估</a> ·
   <a href="docs/README.md">完整文档</a>
 </p>
 
-> **发布状态：**源码与配置已公开。论文、模型权重和冻结训练缓存的下载链接待补充。推理需要对应规模的 ProgDraft 权重；精确重放训练还需要原始初始化和缓存，详见[数据与资产](docs/data_and_assets.md)。
+> **发布状态：**[arXiv 预印本](https://arxiv.org/abs/2609.33245)、源码与配置已公开。模型权重和冻结训练缓存的下载链接待补充。推理需要对应规模的 ProgDraft 权重；精确重放训练还需要原始初始化和缓存，详见[数据与资产](docs/data_and_assets.md)。
 
 ## Demo
 
@@ -24,9 +25,9 @@
 
 [![打开 ProgDraft 交互演示](site/assets/demo-preview.svg)](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)
 
-**[打开交互 Demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** 点击 **Start demo** 后开始，可暂停、拖动进度、调整速度或重播。AnchorDraft 与 ProgDraft 沿各自真实记录的时间戳，在同一时间轴上回放。
+**[打开交互 Demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** 点击 **Start demo** 后三种方法同时起跑，可暂停、拖动进度、调整速度或重播。完成顺序采用各自独立测得的无观测 Decode 延迟；已有 token 事件仍按原始记录时间戳展示。
 
-演示使用一条音频，三种方法的最终 token 序列一致。网站存档展示 Target-only 的实测总延迟和最终文本；本地 demo 还会回放其真实逐 token 时间戳。计时与实验详情可在播放器下方展开查看。
+演示使用一条音频，三种方法的最终 token 序列一致。网站存档会动态显示 Target-only 计时，并在完成时显示最终文本；该存档没有其逐 token 时间戳。本地 demo 还会回放真实的逐 token 时间戳。计时与实验详情可在播放器下方展开查看。
 
 ```bash
 pip install -e '.[asr,demo]'
@@ -120,4 +121,4 @@ progdraft-benchmark \
 - [验证记录](docs/validation.md)：已有契约测试、原实现等价检查及覆盖范围。
 - [开发说明](CONTRIBUTING.md)：本地检查与问题反馈。
 
-论文链接与正式引用信息待补充，作者信息见 [CITATION.cff](CITATION.cff)。许可证为 **TBD**，确定后添加正式 `LICENSE`；当前占位文字不授予开源许可。第三方组件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+论文：[Acoustic Progress Propagation for Long-Horizon Speculative Decoding in ASR](https://arxiv.org/abs/2609.33245)，arXiv:2609.33245（2026）。引用信息见 [CITATION.cff](CITATION.cff)。许可证为 **TBD**，确定后添加正式 `LICENSE`；当前占位文字不授予开源许可。第三方组件见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
