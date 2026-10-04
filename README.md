@@ -27,20 +27,20 @@
 
 ## Demo
 
-**AnchorDraft vs ProgDraft · same audio, same target, K = 8.**
+**Target-only vs AnchorDraft vs ProgDraft · same audio, same target, speculative K = 8.**
 
 [![Open the interactive ProgDraft demo](site/assets/demo-preview.svg)](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)
 
-**[Open the interactive demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** Click **Start demo** to begin, then pause, seek, change speed or replay. Both methods follow their original recorded timestamps on one shared clock.
+**[Open the interactive demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** Click **Start demo** to begin, then pause, seek, change speed or replay. AnchorDraft and ProgDraft follow their original recorded timestamps on one shared clock.
 
-One audio example; both final token sequences match target-only greedy decoding. Timing and experiment details are available below the player.
+One audio example; all final token sequences match target-only greedy decoding. The archived site trace shows Target-only measured latency and final text; the local demo also replays its real per-token timestamps. Timing and experiment details are available below the player.
 
 ```bash
 pip install -e '.[asr,demo]'
 python demo/app.py
 ```
 
-Configure existing local checkpoints and optional test presets first; see the [demo setup](demo/README.md). Open `http://127.0.0.1:7860` on the GPU machine (or forward port 7860). Upload a WAV or select a preset; the app independently measures both methods, then replays them from the same starting time. No retraining is required.
+Configure existing local checkpoints and optional test presets first; see the [demo setup](demo/README.md). Open `http://127.0.0.1:7860` on the GPU machine (or forward port 7860). Upload a WAV or select a preset; the app independently measures all three decoding paths, then replays them from the same starting time. No retraining is required.
 
 ## Overview
 

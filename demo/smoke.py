@@ -17,23 +17,28 @@ def main():
     config = resolve_config(args.config)
     backend = DemoBackend(config)
     for preset in config.get('presets', [])[:args.limit]:
-        results, rounds = {}, {'anchor': [], 'ours': []}
+        results, rounds = {}, {'ar': [], 'anchor': [], 'ours': []}
         for event in backend.events(preset['path']):
             if event['kind'] == 'error':
                 raise RuntimeError(event['text'])
             if event['kind'] == 'round':
                 r = event['event']
-                assert len(r['candidates']) == 8
-                assert len(r['positions']) == (8 if event['method'] == 'ours' else 0)
-                if r['positions']:
-                    assert all(b >= a for a, b in zip(r['positions'], r['positions'][1:]))
+                if event['method'] == 'ar':
+                    assert r['token_index'] == len(r['tokens'])
+                    assert len(r['emitted']) == 1
+                else:
+                    assert len(r['candidates']) == 8
+                    assert len(r['positions']) == (8 if event['method'] == 'ours' else 0)
+                    if r['positions']:
+                        assert all(b >= a for a, b in zip(r['positions'], r['positions'][1:]))
                 rounds[event['method']].append(r)
             if event['kind'] == 'measured':
                 r = event['result']
-                assert len(rounds[event['method']]) == r['rounds']
+                expected_events = r['emitted'] if event['method'] == 'ar' else r['rounds']
+                assert len(rounds[event['method']]) == expected_events
                 results[event['method']] = dict(rounds=r['rounds'], accepted_sum=r['accepted_sum'],
                                                 tokens=len(r['tokens']), exact=True)
-        assert set(results) == {'anchor', 'ours'}
+        assert set(results) == {'ar', 'anchor', 'ours'}
         print(json.dumps(dict(preset=preset['label'], results=results), ensure_ascii=False), flush=True)
 
 

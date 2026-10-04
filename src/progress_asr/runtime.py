@@ -81,6 +81,9 @@ def decode(runner, draft=None, predictor=None, k=8, max_new_tokens=512, *, on_ro
         if draft is None:
             token = int(context.next_logits.argmax(-1)[0])
             tokens.append(token)
+            if on_round is not None:
+                on_round(dict(token_index=len(tokens), emitted=[token], tokens=list(tokens),
+                              terminal=token == eos))
             if token == eos:
                 break
             context = runner.append_target_token(context, token, capture_features=False)

@@ -4,6 +4,18 @@ from demo.demo_backend import replay_timeline, initial_view, update_view
 
 
 class SharedClockTests(unittest.TestCase):
+    def test_target_only_steps_share_clock_with_speculative_rounds(self):
+        ar = dict(rounds=[dict(token_index=1, observed_decode_s=.15),
+                          dict(token_index=2, observed_decode_s=.5)],
+                  observed=dict(decode_s=.55), measured=dict(decode_s=.53), speedup=1)
+        other = dict(rounds=[dict(round=1, observed_decode_s=.3)],
+                     observed=dict(decode_s=.35), measured=dict(decode_s=.34), speedup=1.5)
+        timeline = replay_timeline(dict(methods=dict(ar=ar, anchor=other, ours=other)))
+        self.assertEqual([(t, e['method']) for t, e in timeline if e['kind']=='round'],
+                         [(.15, 'ar'), (.3, 'anchor'), (.3, 'ours'), (.5, 'ar')])
+        self.assertEqual([(t, e['method']) for t, e in timeline if e['kind']=='observed_done'],
+                         [(.35, 'anchor'), (.35, 'ours'), (.55, 'ar')])
+
     def test_merge_uses_elapsed_time_not_round_number(self):
         def method(times, finish):
             return dict(rounds=[dict(round=i+1, observed_decode_s=t) for i, t in enumerate(times)],

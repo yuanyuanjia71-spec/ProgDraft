@@ -43,7 +43,7 @@ def main():
     for name, state in comparison['methods'].items():
         print(name, 'recorded_s=', state['observed']['decode_s'],
               'callback_free_s=', state['measured']['decode_s'],
-              'rounds=', len(state['rounds']), 'exact=', state['exact'], flush=True)
+              'observed_events=', len(state['rounds']), 'exact=', state['exact'], flush=True)
 
 
 if __name__ == '__main__':

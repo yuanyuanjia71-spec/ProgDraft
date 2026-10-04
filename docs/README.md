@@ -9,7 +9,7 @@ ProgDraft implements acoustic progress propagation with Random-K[3,8] training f
 | Set up an environment or run CPU checks | [Installation](installation.md) |
 | Locate the required weights, caches and dataset IDs | [Data and assets](data_and_assets.md) |
 | Transcribe an audio file | [Inference](inference.md) |
-| Visualize AnchorDraft vs Ours, round by round | [Local Gradio demo](../demo/README.md) |
+| Visualize Target-only, AnchorDraft and Ours on one timeline | [Local Gradio demo](../demo/README.md) |
 | Prepare caches, train or resume | [Reproduction](reproduction.md) |
 | Benchmark against target-only decoding | [Runtime and evaluation](runtime.md) |
 | Inspect the model, indexing or exact losses | [Implementation reference](implementation.md) |

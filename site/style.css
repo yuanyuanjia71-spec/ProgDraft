@@ -32,7 +32,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .button:hover { border-color: var(--teal); }
 .button.pending { color: var(--muted); background: #f6f8f7; }
 .hero-summary { color: var(--muted); font-size: 18px; margin: 27px 0 0; }
-.section { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+.section { max-width: 1440px; margin: 0 auto; padding: 40px 24px; }
 h2 { font-size: clamp(25px,2.5vw,34px); letter-spacing: -.035em; line-height: 1.25; margin: 0 0 12px; font-weight: 650; }
 .section-intro { color: var(--muted); margin: 0; font-size: 16px; }
 .section-heading { display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-bottom: 24px; }
@@ -53,8 +53,13 @@ h2 { font-size: clamp(25px,2.5vw,34px); letter-spacing: -.035em; line-height: 1.
 .load-status { margin: 0 0 20px; color: var(--muted); font-size: 15px; }
 .load-status:empty { display: none; }
 .load-status.error { color: #9e3647; }
-.method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.method-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
 .method { --method-color: #6b82a0; min-width: 0; background: white; border: 1px solid #dce4e0; border-radius: 15px; padding: 24px 24px 18px; }
+.method.target { --method-color: #87789c; border-color: #d7cee1; }
+.target-tag { font-size: 12px; color: #69567f; font-weight: 600; }
+.target-detail { border-top: 1px solid #e6ece8; padding: 16px 0 10px; color: var(--muted); font-size: 13px; }
+.target-detail b { color: var(--ink); }
+.target-note { color: var(--muted); font-size: 12px; line-height: 1.5; margin: 12px 0 0; }
 .method.ours { --method-color: var(--teal); border-color: #a8cec0; }
 .method header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .method h3 { font-size: 24px; font-weight: 650; letter-spacing: -.7px; line-height: 1.25; margin: 0; }
@@ -124,7 +129,8 @@ body.recording .race { min-height: 100vh; border: 0; border-radius: 0; }
   .method h3 { font-size: 21px; }
   .ours-tag { font-size: 11px; margin-left: 2px; }
   .method-time { flex-wrap: wrap; }
-  .method-grid { gap: 12px; }
+  .method-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+  .method.target { grid-column: 1 / -1; }
   .speed-control { gap: 6px; }
   .player-controls { gap: 10px; }
   .player-controls .reset-button span { display: none; }

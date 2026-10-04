@@ -98,11 +98,30 @@ def method_panel(view, method, review_round=None):
     return '<div class="method-panel">' + ''.join(parts) + '</div>'
 
 
+def target_panel(view):
+    state = view['ar']
+    steps = state['rounds']
+    parts = ['<div class="round-heading">Target-only · Greedy 自回归</div>', waveform(view),
+             '<div class="method-note">冻结 Target 每步输出 1 个 token；无 drafter、无候选验证。</div>']
+    if steps:
+        latest = steps[-1]
+        parts.append(f'<div class="transcript"><label>已输出 transcript · {len(steps)} token</label>'
+                     f'<p>{escape(latest["text"])}</p></div>')
+        recent = ''.join(f'<span class="ar-token" title="token ID {step["emitted"][0]}">'
+                         f'{escape(step["piece"])}</span>' for step in steps[-12:])
+        parts.append(f'<div class="round-heading">最近 12 个 token</div><div class="ar-tokens">{recent}</div>')
+    else:
+        parts.append('<div class="empty">等待 Target-only 逐 token 解码…</div>')
+    if state['exact']:
+        parts.append(f'<div class="exact">✓ 参考序列 · 记录完成时间 {state["observed"]["decode_s"]:.3f}s</div>')
+    return '<div class="method-panel">' + ''.join(parts) + '</div>'
+
+
 def metrics_html(view):
     headers = ('方法', '接受 draft 总数', '轮数', '平均 draft 接受长度', 'τ（含额外 token）', 'Decode 延迟', '相对 AR')
     rows = []
     reference = view['reference']
-    if reference:
+    if reference and view['ar']['measured']:
         rows.append(f'<tr><td>Target-only AR</td><td>—</td><td>—</td><td>—</td><td>—</td>'
                     f'<td>{reference["decode_s"]:.3f}s</td><td>1.00×</td></tr>')
     for key, title in [('anchor', 'AnchorDraft'), ('ours', 'Ours')]:
@@ -127,6 +146,6 @@ def metrics_html(view):
 
 def status_html(view):
     css = 'status error' if view['error'] else 'status success' if view['done'] else 'status'
-    timer = (f' · 共同时间轴 {view["replay_time"]:.3f}s · 两侧 {view["playback_rate"]:g}× 回放'
+    timer = (f' · 共同时间轴 {view["replay_time"]:.3f}s · 三侧 {view["playback_rate"]:g}× 回放'
              if view.get('playback_rate') else '')
     return f'<div class="{css}">{escape(view["status"])}{timer}</div>'

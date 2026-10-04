@@ -12,7 +12,7 @@ import torch
 from progress_asr.drafter import Drafter, DraftConfig
 from progress_asr.progress import AcousticProgressPredictor
 from progress_asr.rollout import progress_rollout, strict_rollout
-from demo.render import tokens_html
+from demo.render import tokens_html, target_panel
 
 
 class TraceTests(unittest.TestCase):
@@ -50,8 +50,43 @@ class TraceTests(unittest.TestCase):
         event.update(accepted=2, first_rejected=None)
         self.assertNotIn('token rejected', tokens_html(event))
 
+    def test_target_panel_escapes_transcript_and_token_piece(self):
+        from demo.demo_backend import initial_view
+        view = initial_view()
+        view['ar']['rounds'].append(dict(text='<script>', piece='&', emitted=[3]))
+        html = target_panel(view)
+        self.assertNotIn('<script>', html)
+        self.assertIn('&lt;script&gt;', html)
+        self.assertIn('&amp;', html)
+
 
 class DecodeObservationTests(unittest.TestCase):
+    def test_target_only_observer_records_committed_tokens(self):
+        from progress_asr.runtime import decode
+
+        class Runner:
+            processor = SimpleNamespace(tokenizer=SimpleNamespace(convert_tokens_to_ids=lambda _: 99))
+            forward_counts = {}
+
+            def prefill(self, **kwargs):
+                self.index = 0
+                return SimpleNamespace(next_logits=torch.tensor([[0., 2., 1.]]))
+
+            def append_target_token(self, context, token, **kwargs):
+                self.index += 1
+                return SimpleNamespace(next_logits=torch.nn.functional.one_hot(
+                    torch.tensor([99]), num_classes=100).float())
+
+        events = []
+        observed = decode(Runner(), on_round=events.append)
+        plain = decode(Runner())
+        self.assertEqual(observed, plain)
+        self.assertEqual(observed[0], [1, 99])
+        self.assertEqual([e['tokens'] for e in events], [[1], [1, 99]])
+        self.assertEqual([e['terminal'] for e in events], [False, True])
+        events[-1]['tokens'].append(-10)
+        self.assertEqual(observed[0], [1, 99])
+
     def test_rejection_bonus_and_accepted_eos(self):
         from progress_asr.runtime import decode
         # Actual decode loop; only model/verification computation is simulated.
@@ -93,6 +128,7 @@ class DecodeObservationTests(unittest.TestCase):
         view['anchor']['measured'] = {'decode_s': 1}
         update_view(view, dict(kind='error', text='failed'))
         self.assertIsNone(view['anchor']['measured'])
+        self.assertIsNone(view['reference'])
         self.assertTrue(view['error'])
 
 

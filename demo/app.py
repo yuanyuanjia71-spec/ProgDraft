@@ -12,7 +12,7 @@ os.environ.setdefault('GRADIO_ANALYTICS_ENABLED', 'False')
 os.environ.setdefault('TOKENIZERS_PARALLELISM', 'false')
 
 from demo.demo_backend import DemoBackend, initial_view, resolve_config, update_view
-from demo.render import method_panel, metrics_html, status_html
+from demo.render import method_panel, metrics_html, status_html, target_panel
 
 
 def create_app(config):
@@ -24,8 +24,8 @@ def create_app(config):
     model_id = json.loads(Path(config['model_config']).read_text())['target']['model_id']
     with gr.Blocks(title='ProgDraft · Long-horizon ASR', css=css, theme=gr.themes.Soft(primary_hue='teal')) as app:
         gr.Markdown('# ProgDraft\n### Hear the speech. Follow the draft.')
-        gr.Markdown('长跨度投机解码 · AnchorDraft 与 Acoustic Progress Propagation 的逐轮对比')
-        gr.Markdown(f'**同一 Target：{model_id}　·　Greedy　·　K = 8　·　双侧同步起跑**')
+        gr.Markdown('长跨度投机解码 · Target-only、AnchorDraft 与 Acoustic Progress Propagation 的对比')
+        gr.Markdown(f'**同一 Target：{model_id}　·　Greedy　·　投机方法 K = 8　·　三侧同步起跑**')
         gr.Markdown(f'AnchorDraft 权重：{config.get("anchor_label", "local checkpoint")}  \n'
                     f'Ours 权重：{config.get("ours_label", "Joint + Random-K[3,8]")}')
         with gr.Row():
@@ -35,12 +35,15 @@ def create_app(config):
                 preset = gr.Dropdown(label='固定 Final Test 预设', choices=list(presets), value=None,
                                      info='也可直接上传自己的音频。')
                 start = gr.Button('开始真实解码对比', variant='primary')
-                rate = gr.Dropdown(label='两侧统一播放倍率', choices=[('原速 1×', 1.0), ('放慢 4 倍 · 0.25×', 0.25), ('放慢 10 倍 · 0.1×', 0.1)], value=0.1)
-                gr.Markdown('先在同一 GPU 独立实测，再从同一零时刻同步回放。保留每轮原始时间戳；较快的一侧先完成。模型首次加载需要一些时间。')
+                rate = gr.Dropdown(label='三侧统一播放倍率', choices=[('原速 1×', 1.0), ('放慢 4 倍 · 0.25×', 0.25), ('放慢 10 倍 · 0.1×', 0.1)], value=0.1)
+                gr.Markdown('先在同一 GPU 独立实测，再从同一零时刻同步回放。保留 Target-only 每个 token 与投机方法每轮的原始时间戳；先完成的面板先停止。模型首次加载需要一些时间。')
         status = gr.HTML(status_html(view))
         gr.HTML('<div class="legend"><span class="accepted">绿色 · 已接受</span>'
                 '<span class="rejected">红色 · 首次拒绝</span><span class="unused">灰色 · 未接受/未验证</span></div>')
         with gr.Row(equal_height=True):
+            with gr.Column():
+                gr.Markdown('## Target-only · Greedy AR')
+                target = gr.HTML(target_panel(view))
             with gr.Column():
                 gr.Markdown('## AnchorDraft')
                 left = gr.HTML(method_panel(view, 'anchor'))
@@ -50,7 +53,6 @@ def create_app(config):
                 review = gr.Slider(1, 2, value=1, step=1, label='完成后回看 Ours 某一轮的声学进度', interactive=False)
         gr.Markdown('### 实时接受统计与独立推理计时')
         metrics = gr.HTML(metrics_html(view))
-        reference = gr.Textbox(label='Target-only greedy AR transcript（参考）', interactive=False)
         state = gr.State(view)
 
         def select_preset(label):
@@ -58,8 +60,8 @@ def create_app(config):
 
         def render(current):
             n = len(current['ours']['rounds'])
-            return (status_html(current), method_panel(current, 'anchor'), method_panel(current, 'ours'),
-                    metrics_html(current), (current['reference'] or {}).get('text', ''), current,
+            return (status_html(current), target_panel(current), method_panel(current, 'anchor'), method_panel(current, 'ours'),
+                    metrics_html(current), current,
                     gr.update(minimum=1, maximum=max(2, n), step=1, value=max(1, n), interactive=current['done'] and n > 1),
                     gr.update(interactive=current['done'] or current['error']),
                     gr.update(interactive=current['done'] or current['error']),
@@ -81,7 +83,7 @@ def create_app(config):
                 yield render(current)
 
         preset.change(select_preset, preset, audio, queue=False, api_name=False)
-        start.click(compare, [audio, rate], [status, left, right, metrics, reference, state, review, start, audio, preset],
+        start.click(compare, [audio, rate], [status, target, left, right, metrics, state, review, start, audio, preset],
                     concurrency_limit=1, concurrency_id='single-gpu', api_name='compare')
         review.input(lambda n, current: method_panel(current, 'ours', n), [review, state], right,
                      queue=False, api_name=False)

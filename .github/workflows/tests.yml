@@ -22,5 +22,7 @@ jobs:
         run: python -m pip install -e '.[asr,demo]'
       - name: Run all training and verifier contracts
         run: python -m unittest discover -s tests -v
+      - name: Check archived and timestamped site replay
+        run: node tests/check_site_replay.cjs
       - name: Check Python syntax
         run: python -m compileall -q src scripts tests demo

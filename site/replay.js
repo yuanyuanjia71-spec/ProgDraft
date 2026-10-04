@@ -6,7 +6,7 @@
   const escape = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let data, duration = 0, elapsed = 0, playing = false, lastTick = 0, frame = null;
   let rate = Number($('rate').value);
-  const previousRound = {anchor: -1, ours: -1};
+  const previousRound = {ar: -1, anchor: -1, ours: -1};
   if (new URLSearchParams(location.search).has('record')) document.body.classList.add('recording');
 
   function waveform(event) {
@@ -67,11 +67,31 @@
     if (name==='ours') $('progress-label').textContent = event ? `${event.positions[0].toFixed(1)} → ${event.positions.at(-1).toFixed(1)} s` : 'Across 8 draft steps';
   }
 
+  function updateTarget() {
+    const method=data.methods.ar;
+    if (!method) return;
+    const finish=method.observed.decode_s;
+    const complete=elapsed>=finish;
+    let index=-1;
+    for (let i=0; i<method.rounds.length && method.rounds[i].observed_decode_s<=elapsed; i++) index=i;
+    const event=method.rounds[index];
+    $('target-latency').innerHTML=`${Math.min(elapsed,finish).toFixed(3)}<span>s</span>`;
+    $('target-status').textContent=complete ? 'Finished' : playing ? 'Decoding' : elapsed ? 'Paused' : 'Ready';
+    $('target-status').classList.toggle('done',complete);
+    $('target-bar').style.width=`${event ? 100*event.tokens.length/data.reference.tokens.length : 0}%`;
+    if (previousRound.ar===index) return;
+    previousRound.ar=index;
+    $('target-token-count').textContent=event?.tokens.length || 0;
+    $('target-transcript').textContent=event?.text || (elapsed ? 'Preparing the transcript…' : 'Press Start demo to begin.');
+    $('target-transcript').classList.toggle('is-empty',!event?.text);
+    $('target-transcript').scrollTop=$('target-transcript').scrollHeight;
+  }
+
   function render() {
     $('clock').textContent = elapsed.toFixed(3);
     $('seek').setAttribute('aria-valuetext', `${elapsed.toFixed(3)} of ${duration.toFixed(3)} seconds`);
     $('seek').value = elapsed;
-    updateMethod('anchor'); updateMethod('ours');
+    updateTarget(); updateMethod('anchor'); updateMethod('ours');
     $('playback-note').textContent = `${rate}× speed${rate<1 ? ` · ${1/rate}× slower` : ' · real time'}`;
     $('play').textContent = playing ? 'Ⅱ Pause' : elapsed >= duration ? '↺ Replay demo' : elapsed > 0 ? '▶ Resume' : '▶ Start demo';
     $('play').setAttribute('aria-label', playing ? 'Pause demo' : elapsed >= duration ? 'Replay demo' : elapsed > 0 ? 'Resume demo' : 'Start demo');
@@ -104,6 +124,17 @@
     if (!response.ok) throw new Error(`Trace unavailable (${response.status})`);
     data = await response.json();
     if (data.k!==8 || !data.methods.anchor.exact || !data.methods.ours.exact) throw new Error('Invalid comparison contract');
+    if (data.methods.ar) {
+      const ar=data.methods.ar;
+      if (!ar.exact || JSON.stringify(ar.observed.tokens)!==JSON.stringify(data.reference.tokens) || JSON.stringify(ar.measured.tokens)!==JSON.stringify(data.reference.tokens)) throw new Error('Target-only token-ID consistency check failed');
+      let previous=0;
+      for (const event of ar.rounds) {
+        if (event.observed_decode_s<previous || event.observed_decode_s>ar.observed.decode_s) throw new Error('Invalid Target-only timeline');
+        if (JSON.stringify(event.tokens)!==JSON.stringify(data.reference.tokens.slice(0,event.tokens.length))) throw new Error('Target-only committed prefix mismatch');
+        previous=event.observed_decode_s;
+      }
+      if (!ar.rounds.length || JSON.stringify(ar.rounds.at(-1).tokens)!==JSON.stringify(data.reference.tokens)) throw new Error('Incomplete Target-only trace');
+    }
     for (const name of ['anchor','ours']) {
       const method = data.methods[name];
       if (JSON.stringify(method.observed.tokens)!==JSON.stringify(data.reference.tokens) || JSON.stringify(method.measured.tokens)!==JSON.stringify(data.reference.tokens)) throw new Error('Token-ID consistency check failed');
@@ -113,8 +144,22 @@
         if (JSON.stringify(event.tokens)!==JSON.stringify(data.reference.tokens.slice(0,event.tokens.length))) throw new Error('Committed prefix mismatch');
         previous=event.observed_decode_s;
       }
+      if (!method.rounds.length || JSON.stringify(method.rounds.at(-1).tokens)!==JSON.stringify(data.reference.tokens)) throw new Error('Incomplete speculative trace');
     }
-    duration=Math.max(data.methods.anchor.observed.decode_s,data.methods.ours.observed.decode_s);
+    duration=Math.max(data.methods.anchor.observed.decode_s,data.methods.ours.observed.decode_s,data.methods.ar?.observed.decode_s || 0);
+    $('target-latency').innerHTML=`${data.reference.decode_s.toFixed(3)}<span>s</span>`;
+    $('target-transcript').textContent=data.reference.text;
+    $('target-token-count').textContent=data.reference.tokens.length;
+    $('target-bar').style.width='100%';
+    $('target-wave').innerHTML=waveform(null);
+    if (data.methods.ar) {
+      $('target-time-label').textContent='Observed decode clock';
+      $('target-note').textContent=`Per-token timestamps from an independent recorded run. Callback-free baseline: ${data.reference.decode_s.toFixed(3)} s.`;
+      $('target-status').textContent='Ready';
+      $('target-status').classList.remove('done');
+      $('demo-caption').textContent='Three independent runs on the same GPU, replayed from one zero time using their recorded event timestamps.';
+      $('timeline-detail').textContent='All three replay traces use their original recorded timestamps. The latency table uses separate callback-free runs and does not rescale the replay.';
+    }
     $('seek').max=duration;
     $('duration').textContent=duration.toFixed(3);
     $('run-context').textContent=`${data.provenance.target} · ${data.audio.duration.toFixed(2)}s LibriSpeech audio · Greedy · ${data.gpu} · Same GPU, independent runs`;
@@ -128,7 +173,7 @@
     for (const id of ['play','restart','seek','rate']) $(id).disabled=false;
     $('load-status').textContent='';
     $('race').setAttribute('aria-busy','false');
-    previousRound.anchor=-2; previousRound.ours=-2;render();
+    previousRound.ar=-2; previousRound.anchor=-2; previousRound.ours=-2;render();
     // Deterministic controls for browser checks / video capture; read-only model data.
     window.progdraftReplay={play,pause,seek:(t)=>{pause();elapsed=Math.max(0,Math.min(duration,t));render();},setRate:(r)=>{if(![1,.25,.1,.05].includes(r))throw new Error('Unsupported playback rate');rate=r;$('rate').value=r;lastTick=performance.now();render();},get data(){return data;},get time(){return elapsed;},get playing(){return playing;}};
   }

@@ -12,6 +12,8 @@
 .token { display: inline-flex; flex-direction: column; min-width: 45px; padding: 4px 8px 7px; border: 1px solid; border-radius: 6px; }
 .token small { font-size: 10px; opacity: .7; }
 .token > span { font: 14px ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ar-tokens { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
+.ar-token { padding: 4px 7px; border-radius: 5px; background: #e8eef8; color: #244065; font: 12px ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 .round-heading { font-size: 13px; font-weight: 650; color: #334155; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
 .round-heading > span { font-weight: 400; }
 .round-history { max-height: 440px; overflow: auto; padding-right: 5px; }

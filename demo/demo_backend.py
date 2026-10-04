@@ -109,15 +109,26 @@ class DemoBackend:
                 self.run(path, method)
             notify(kind='phase', text='独立测量 Target-only AR，保存完整 token ID 参考…')
             reference = self.run(path, 'ar')
-            methods = {}
+            notify(kind='phase', text='记录 Target-only AR 的真实逐 token 时间戳…')
+            ar_steps = []
+            ar_observed = self.run(path, 'ar', ar_steps.append)
+            assert_exact(reference['tokens'], ar_observed['tokens'], 'target-only observed')
+            if len(ar_steps) != len(reference['tokens']):
+                raise RuntimeError('Target-only 逐 token 记录不完整。')
+            tokenizer = self.processor.tokenizer
+            for event in ar_steps:
+                assert_exact(reference['tokens'][:len(event['tokens'])], event['tokens'], 'target-only prefix')
+                event['piece'] = tokenizer.decode(event['emitted'], skip_special_tokens=False)
+                event['text'] = tokenizer.decode(event['tokens'], skip_special_tokens=True)
+            methods = {'ar': dict(rounds=ar_steps, observed=ar_observed, measured=reference,
+                                  speedup=1.0, exact=True)}
             for method in ('anchor', 'ours'):
-                notify(kind='phase', text=f'记录 {method} 的真实轮次时间戳；两侧将在测量完成后同步起跑…')
+                notify(kind='phase', text=f'记录 {method} 的真实轮次时间戳；三种解码将在测量完成后同步起跑…')
                 rounds = []
                 # Minimal observer: runtime already supplies independent CPU snapshots.
                 # Token decoding / validation happen AFTER the timed observed run.
                 observed = self.run(path, method, rounds.append)
                 assert_exact(reference['tokens'], observed['tokens'], method)
-                tokenizer = self.processor.tokenizer
                 for event in rounds:
                     assert_exact(reference['tokens'][:len(event['tokens'])], event['tokens'], method)
                     event['pieces'] = [tokenizer.decode([t], skip_special_tokens=False)
@@ -133,7 +144,7 @@ class DemoBackend:
                         raise RuntimeError(f'{method}: 观测/无观测运行的 {key} 不一致。')
                 methods[method] = dict(rounds=rounds, observed=observed, measured=measured,
                                        speedup=reference['decode_s']/measured['decode_s'], exact=True)
-            return dict(schema_version=1, k=K, audio=audio, reference=reference, methods=methods,
+            return dict(schema_version=2, k=K, audio=audio, reference=reference, methods=methods,
                         gpu=torch.cuda.get_device_name(self.device),
                         timing='Original observed decode timestamps, including prefill; no per-method time rescaling. '
                                'Separate callback-free runs provide benchmark timings.')
@@ -141,10 +152,10 @@ class DemoBackend:
             self.lock.release()
 
     def events(self, path, playback_rate=0.1):
-        """Capture independently, then start BOTH traces on one wall-clock origin.
+        """Capture independently, then start all three traces on one wall-clock origin.
 
-        A single playback multiplier applies to both methods. Round timings are
-        never stretched to match callback-free latency or to align round numbers.
+        A single playback multiplier applies to all methods. Event timings are
+        never stretched to match callback-free latency or to align token/round numbers.
         """
         if not 0 < playback_rate <= 1:
             raise ValueError('Playback rate must be in (0, 1].')
@@ -191,7 +202,9 @@ class DemoBackend:
 def replay_timeline(comparison):
     """Merge original timestamps, preserving unequal duration and round count."""
     timeline = []
-    for method in ('anchor', 'ours'):
+    for method in ('ar', 'anchor', 'ours'):
+        if method not in comparison['methods']:
+            continue
         state = comparison['methods'][method]
         finish = state['observed']['decode_s']
         previous = 0.0
@@ -209,6 +222,7 @@ def replay_timeline(comparison):
 def initial_view():
     return dict(status='上传 WAV 或选择测试集样例，然后开始对比。', duration=0, envelope=[],
                 reference=None, error=False, done=False, replay_time=0.0, playback_rate=None,
+                ar=dict(rounds=[], measured=None, exact=False),
                 anchor=dict(rounds=[], measured=None, exact=False),
                 ours=dict(rounds=[], measured=None, exact=False))
 
@@ -225,7 +239,7 @@ def update_view(view, event):
         view['reference'] = event['result']
     elif kind == 'replay_start':
         view.update(playback_rate=event['playback_rate'], replay_time=0.0,
-                    status='双侧同步回放：同一起点、原始时间戳、统一播放倍率。')
+                    status='三种解码同步回放：同一起点、原始时间戳、统一播放倍率。')
     elif kind == 'round':
         view[event['method']]['rounds'].append(event['event'])
     elif kind == 'observed_done':
@@ -233,11 +247,12 @@ def update_view(view, event):
     elif kind == 'measured':
         view[event['method']].update(measured=event['result'], speedup=event['speedup'])
     elif kind == 'done':
-        view.update(done=True, status='完成：两种方法的全部输出 token ID 均与 Target-only greedy AR 一致。')
+        view.update(done=True, status='完成：三种解码的全部输出 token ID 一致。')
     elif kind == 'error':
         view.update(error=True, status=event['text'])
         # An incomplete/failed comparison must not advertise a speedup.
-        for method in ('anchor', 'ours'):
+        view['reference'] = None
+        for method in ('ar', 'anchor', 'ours'):
             view[method]['measured'] = None
             view[method]['exact'] = False
     return view

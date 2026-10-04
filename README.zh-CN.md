@@ -20,13 +20,13 @@
 
 ## Demo
 
-**AnchorDraft 与 ProgDraft · 相同音频、相同 Target、K = 8。**
+**Target-only、AnchorDraft 与 ProgDraft · 相同音频、相同 Target；投机方法 K = 8。**
 
 [![打开 ProgDraft 交互演示](site/assets/demo-preview.svg)](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)
 
-**[打开交互 Demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** 点击 **Start demo** 后开始，可暂停、拖动进度、调整速度或重播。两种方法沿各自真实记录的时间戳，在同一时间轴上回放。
+**[打开交互 Demo →](https://yuanyuanjia71-spec.github.io/ProgDraft/#demo)** 点击 **Start demo** 后开始，可暂停、拖动进度、调整速度或重播。AnchorDraft 与 ProgDraft 沿各自真实记录的时间戳，在同一时间轴上回放。
 
-演示使用一条音频，两种方法的最终 token 序列均与 Target-only greedy 解码一致。计时与实验详情可在播放器下方展开查看。
+演示使用一条音频，三种方法的最终 token 序列一致。网站存档展示 Target-only 的实测总延迟和最终文本；本地 demo 还会回放其真实逐 token 时间戳。计时与实验详情可在播放器下方展开查看。
 
 ```bash
 pip install -e '.[asr,demo]'
