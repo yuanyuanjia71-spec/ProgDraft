@@ -6,6 +6,7 @@
   const escape = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let data, duration = 0, elapsed = 0, playing = false, lastTick = 0, frame = null;
   let referencePieces = [];
+  let archivePrefixesMatch = false;
   let rate = Number($('rate').value);
   const previousRound = {ar: -1, anchor: -1, ours: -1};
   let previousRaceText = '';
@@ -78,6 +79,12 @@
     if (method) for (let i=0; i<method.rounds.length && method.rounds[i].observed_decode_s<=elapsed; i++) index=i;
     const event=method?.rounds[index];
     const traceComplete=event && event.tokens.length===data.reference.tokens.length;
+    const tokenTotal=data.reference.tokens.length;
+    const prefill=Math.max(0,Math.min(finish,Number(data.reference.prefill_s)||0));
+    const generation=Math.max(finish-prefill,Number.EPSILON);
+    const illustratedCount=complete ? tokenTotal : Math.max(0,Math.min(tokenTotal-1,
+      Math.floor((elapsed-prefill)*tokenTotal/generation)));
+    const count=method ? event?.tokens.length || 0 : illustratedCount;
     $('target-latency').innerHTML=`${Math.min(elapsed,finish).toFixed(3)}<span>s</span>`;
     $('target-status').textContent=complete ? 'Finished' : playing ? 'Decoding' : elapsed ? 'Paused' : 'Ready';
     $('target-status').classList.toggle('done',complete);
@@ -86,13 +93,16 @@
     $('target-exact').textContent=complete && (!method || traceComplete) ? 'Reference token IDs' : '';
     if (previousRound.ar===index && method) return;
     previousRound.ar=index;
-    const text=event?.text || (!method && complete ? data.reference.text : elapsed ? 'Decoding…' : 'Press Start demo to begin.');
-    $('target-token-count').textContent=event?.tokens.length || (!method && complete ? data.reference.tokens.length : 0);
+    const text=method ? event?.text || (elapsed ? 'Decoding…' : 'Press Start demo to begin.') :
+      complete ? data.reference.text : count && archivePrefixesMatch ? referencePieces.slice(0,count).join('') :
+      elapsed ? 'Decoding…' : 'Press Start demo to begin.';
+    $('target-token-count').textContent=count;
     $('target-transcript').textContent=text;
-    $('target-transcript').classList.toggle('is-empty',!event?.text && !(!method && complete));
+    $('target-transcript').classList.toggle('is-empty',method ? !event?.text : !count);
     $('target-transcript').scrollTop=$('target-transcript').scrollHeight;
-    $('target-step').textContent=event ? `Token ${event.token_index} / ${data.reference.tokens.length}` : complete ? `${data.reference.tokens.length} tokens emitted` : method ? 'Waiting for first token' : 'Per-token trace unavailable';
-    const recent=method ? method.rounds.slice(Math.max(0,index-7),index+1).map(step=>({id:step.emitted[0],piece:step.piece})) : complete ? data.reference.tokens.map((id,i)=>({id,piece:referencePieces[i] ?? String(id)})).slice(-8) : [];
+    $('target-step').textContent=count ? `Token ${count} / ${tokenTotal}` : method ? 'Waiting for first token' : 'Preparing target';
+    const recent=method ? method.rounds.slice(Math.max(0,index-7),index+1).map(step=>({id:step.emitted[0],piece:step.piece})) :
+      data.reference.tokens.slice(Math.max(0,count-8),count).map((id,i)=>({id,piece:referencePieces[Math.max(0,count-8)+i] ?? String(id)}));
     $('target-tokens').innerHTML=Array.from({length:8},(_,i)=>{
       const token=recent[i];
       return `<div class="token ${token ? 'target-token' : 'unused'}" title="${token ? `Target token ID ${escape(token.id)}` : 'No token event'}"><code>${token ? escape(token.piece || '∅') : '—'}</code><span class="token-mark" aria-hidden="true">${token ? '✓' : ''}</span></div>`;
@@ -172,11 +182,11 @@
     }
     referencePieces=data.methods.anchor.rounds.flatMap(event=>event.emitted_pieces);
     if (referencePieces.length!==data.reference.tokens.length) throw new Error('Incomplete target token pieces');
+    archivePrefixesMatch=referencePieces.slice(0,-1).join('')===data.reference.text;
     duration=Math.max(data.reference.decode_s,data.methods.anchor.measured.decode_s,data.methods.ours.measured.decode_s,
       data.methods.anchor.observed.decode_s,data.methods.ours.observed.decode_s,data.methods.ar?.observed.decode_s || 0);
     $('target-wave').innerHTML=waveform(null);
     if (data.methods.ar) {
-      $('target-note').textContent=`Target-only token events retain their recorded timestamps. Its finish clock uses the independent ${data.reference.decode_s.toFixed(3)} s callback-free measurement.`;
       $('demo-caption').textContent='All three timers start together and finish at independently measured decode latencies. Token events retain their recorded timestamps.';
       $('timeline-detail').textContent='All three finish times use independent callback-free measurements. Token events retain their original recorded timestamps, so a transcript may complete before or after its measured finish clock.';
     }

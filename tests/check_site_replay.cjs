@@ -43,6 +43,15 @@ async function load(trace) {
   for (const name of ['target', 'anchor', 'ours']) {
     assert.equal(old.elements.get(`${name}-status`).textContent, 'Decoding');
   }
+  old.replay.seek(archived.reference.prefill_s/2);
+  assert.equal(old.elements.get('target-token-count').textContent, 0);
+  const generationHalf=archived.reference.prefill_s+
+    (archived.reference.decode_s-archived.reference.prefill_s)/2;
+  old.replay.seek(generationHalf);
+  const halfwayCount=old.elements.get('target-token-count').textContent;
+  assert.ok(halfwayCount > 0 && halfwayCount < archived.reference.tokens.length);
+  const pieces=archived.methods.anchor.rounds.flatMap(event=>event.emitted_pieces);
+  assert.equal(old.elements.get('target-transcript').textContent, pieces.slice(0,halfwayCount).join(''));
   const firstAnchorEvent = archived.methods.anchor.rounds[0].observed_decode_s;
   old.replay.seek(firstAnchorEvent - .001);
   assert.equal(old.elements.get('anchor-round').textContent, 'Preparing…');
@@ -63,7 +72,7 @@ async function load(trace) {
   old.replay.seek((anchorFinish+targetFinish)/2);
   assert.equal(old.elements.get('anchor-status').textContent, 'Finished');
   assert.equal(old.elements.get('target-status').textContent, 'Paused');
-  assert.equal(old.elements.get('target-token-count').textContent, 0);
+  assert.ok(old.elements.get('target-token-count').textContent > halfwayCount);
   old.replay.seek(targetFinish);
   assert.equal(old.elements.get('target-status').textContent, 'Finished');
   assert.match(old.elements.get('target-latency').innerHTML,

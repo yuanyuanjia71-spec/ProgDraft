@@ -59,7 +59,6 @@
             <div class="wave-heading"><span>Audio</span><span>Full context</span></div>
             <div class="wave" id="target-wave"></div>
             <div class="method-summary"><span>Greedy autoregressive</span><span id="target-exact" class="exact"></span></div>
-            <p class="target-note" id="target-note">This archive has measured Target-only latency, but no per-token timestamps. Its timer runs with the other two; the final transcript appears when it finishes.</p>
           </article>
           <article class="method anchor" id="anchor-panel" aria-label="AnchorDraft">
             <header><h3>AnchorDraft</h3><span class="run-status" id="anchor-status">Ready</span></header>
@@ -95,7 +94,7 @@
         <p id="run-context"></p>
         <p>AnchorDraft: fixed K = 3 training, without runtime correction. ProgDraft: joint progress-aware training with Random-K[3,8]. Both decode at K = 8.</p>
         <h3>Independent timing</h3>
-        <p id="timeline-detail">The three finish times use independent callback-free decode measurements on the same GPU. AnchorDraft and ProgDraft token events retain their recorded timestamps, which can end before the measured finish point. The archived Target-only result has no per-token timestamps, so its final text appears at its measured finish.</p>
+        <p id="timeline-detail">The three finish times use independent callback-free decode measurements on the same GPU. AnchorDraft and ProgDraft token events retain their recorded timestamps, which can end before the measured finish point. The archived Target-only result has no per-token timestamps; its intermediate token progression is illustrative.</p>
         <div class="table-scroll"><table><thead><tr><th>Method</th><th>Decode latency</th><th>Speedup vs AR</th><th>Mean accepted τ</th><th>Token-ID match</th></tr></thead><tbody id="measurements"></tbody></table></div>
         <p>Decode time includes prompt prefill and generation, after audio preparation. τ includes correction/bonus tokens. Independent runs on the same GPU; not a concurrent benchmark or an aggregate paper result.</p>
         <a href="assets/progdraft-synchronized.mp4">Download the original AnchorDraft / ProgDraft recording ↗</a>
